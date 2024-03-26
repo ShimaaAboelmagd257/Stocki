@@ -11,7 +11,6 @@ Stocki is an Android application designed to provide users with real-time stock 
 - **Firebase Integration:** Utilizes Firebase services for enhanced authentication and data management.
 - **Profile Page:** Personalized profile page for users to manage their preferences and settings.
 
-- 
 ## User Interface (UI) with Jetpack Compose
 
 - **Stocki's** user interface is built using Jetpack Compose, the modern toolkit for building native Android UI. Instead of traditional XML layout files, Jetpack Compose allows for UI construction using composable functions, which offer a more declarative and flexible approach to UI development.
@@ -29,13 +28,11 @@ The app follows the Model-View-Intent (MVI) architecture pattern, which helps in
 - **Room:** Room is utilized for local data storage, providing an abstraction layer over SQLite and enabling efficient data persistence.
 - **Coroutines:** Coroutines are used for asynchronous programming, allowing for non-blocking, concurrent code execution with simplified error handling and cancellation.
 
-- 
+
 ## API Integration
 
 **Stocki** utilizes the Polygon.io Stocks API to fetch real-time market data and other relevant information. The Polygon.io Stocks API offers a wide range of REST endpoints that provide access to various data sets
 By leveraging the Polygon.io Stocks API, **Stocki** ensures reliable and comprehensive data for users, enabling them to make informed decisions about stock investments and market trends.
-
-
 
 ## Usage
 
