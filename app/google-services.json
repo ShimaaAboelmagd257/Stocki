@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "124054707468",
+    "firebase_url": "https://stocki-13ed5-default-rtdb.firebaseio.com",
+    "project_id": "stocki-13ed5",
+    "storage_bucket": "stocki-13ed5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:124054707468:android:e437895b1f89bf69cabd29",
+        "android_client_info": {
+          "package_name": "com.example.stocki"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "124054707468-3cmu7em0hhjo4dibp3cb4m83ti97dh2b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.stocki",
+            "certificate_hash": "7df499403eba24fd628eefb3d74db3cfa6442400"
+          }
+        },
+        {
+          "client_id": "124054707468-7jeb0b7nk3s385ldun1vfbrbqg9ocmjk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEjpdjnbQvZVmlqpTTAyRPvqkWrb0dXz8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "124054707468-7jeb0b7nk3s385ldun1vfbrbqg9ocmjk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
