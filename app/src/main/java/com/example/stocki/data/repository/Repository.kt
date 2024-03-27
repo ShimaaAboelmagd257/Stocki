@@ -18,11 +18,25 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         return localSource.getgetAllTickerTypes(/*market*/)
     }
     suspend fun insertTypes(tickerTypes: List<TickerTypes>){
+        tickerTypes.forEach { ticker ->
+            Log.d("StockiRepo", "insertTypes: Market = ${ticker.market}, Name = ${ticker.name}, Ticker = ${ticker.ticker}, Type = ${ticker.type}, Locale = ${ticker.locale}")
+        }
         localSource.insertTypes(tickerTypes)
-        Log.d("StockiRepo", "insertTypes  ${tickerTypes}" )
 
     }
-
+    suspend fun getTicker(market: String):  List<TickerTypes>  {
+        Log.d("StockiRepo", "getTicker " )
+        val remoteSource = remoteSource.getTicker(market)
+        return remoteSource.results.map { ticker ->
+            TickerTypes(
+                market = ticker.market,
+                name = ticker.name,
+                ticker = ticker.ticker,
+                type = ticker.type,
+                locale = ticker.locale
+            )
+        }
+    }
 
     suspend fun getAggregateBars(
         stocksTicker: String,
@@ -58,26 +72,14 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         return remoteSource.getPreviousClose(stocksTicker)
     }
 
-    suspend fun getTicker(
-        //ticker: String,
-                         // type:String,
-                          market: String
-                          /*market: String ,exchange: String ,cusip: String ,cik: String,date: String
-                          ,search: String,sort: String*/
-    ):  List<TickerTypes>  {
-        Log.d("StockiRepo", "getTicker " )
-val remoteSource = remoteSource.getTicker(market)
-        return remoteSource.results.map { ticker ->
-            TickerTypes(
-                market = ticker.market,
-                name = ticker.name,
-                ticker = ticker.ticker,
-                type = ticker.type,
-                locale = ticker.locale
-            )
-        }
-    }
 
+    /* suspend fun getTicker(
+            //ticker: String,
+                             // type:String,
+                              market: String
+                              *//*market: String ,exchange: String ,cusip: String ,cik: String,date: String
+                          ,search: String,sort: String*//*
+    ):  List<TickerTypes> */
     suspend fun getTickerInfo(ticker: String): CompanyResponse {
         Log.d("StockiRepo", "getTickerInfo  ${ticker} ${remoteSource.getTickerInfo(ticker)}" )
 

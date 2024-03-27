@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.stocki.data.pojos.TickerTypes
 
-@Database(entities = [TickerTypes::class], version = 3)
+@Database(entities = [TickerTypes::class], version = 7)
 abstract class StockiDatabase : RoomDatabase() {
 
     abstract fun TickerDAO() : TickerDAO

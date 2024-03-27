@@ -34,10 +34,10 @@ data class Ticker(
 @Entity(tableName = "Tickertypes")
 data class TickerTypes(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val market: String?,
-    val name: String,
-    val ticker: String,
+    val id: Long = 0 ,
+    val market: String,
+    val name: String?,
+    val ticker: String?,
     val type: String?,
     val locale: String? = "",
 

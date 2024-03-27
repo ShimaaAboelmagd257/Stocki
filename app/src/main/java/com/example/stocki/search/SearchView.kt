@@ -26,7 +26,7 @@ fun search(navController: NavHostController,viewmodel: SearchViewmodel = hiltVie
 
 
     LaunchedEffect(Unit) {
-        viewmodel.fetchData(listOf(/*"stocks","crypto",*/"fx"/*,"indices"*/))
+        viewmodel.fetchData(listOf("stocks","crypto","otc","fx","indices"))
         /*viewmodel.fetchData("crypto")
         viewmodel.fetchData("fx")
        viewmodel.fetchData("otc")
@@ -74,11 +74,23 @@ fun search(navController: NavHostController,viewmodel: SearchViewmodel = hiltVie
         is SearchState.Loading -> {
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
-        is SearchState.Data -> {
+       /* is SearchState.Data -> {
 
             val filteredData = searchState.data?.filter { it.market == selectedTab }
 
             TickerListScreen(tickers = filteredData ?: emptyList())
+            Log.d("StockiSearch", "filteredData ${filteredData?.size} ${selectedTab}")
+
+        }*/
+        is SearchState.Data -> {
+            val filteredData = searchState.data?.filter { it.market.equals(selectedTab, ignoreCase = true) }
+
+            if (filteredData.isNullOrEmpty()) {
+                // No data available for the selected market type
+                Text("No data available", modifier = Modifier.padding(16.dp))
+            } else {
+                TickerListScreen(tickers = filteredData)
+            }
             Log.d("StockiSearch", "filteredData ${filteredData?.size} ${selectedTab}")
 
         }
