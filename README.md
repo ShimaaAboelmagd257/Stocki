@@ -13,8 +13,8 @@ Stocki is an Android application designed to provide users with real-time stock 
 
 ## User Interface (UI) with Jetpack Compose
 
-- **Stocki's** user interface is built using Jetpack Compose, the modern toolkit for building native Android UI. Instead of traditional XML layout files, Jetpack Compose allows for UI construction using composable functions, which offer a more declarative and flexible approach to UI development.
-With Jetpack Compose, UI components are written as functions that describe their own UI structure and behavior. This enables dynamic UI updates, seamless state management, and improved code organization compared to XML-based layouts.
+- **Stocki's** user interface is built using Jetpack Compose, the modern toolkit for building native Android UI. Instead of traditional XML layout files, Jetpack Compose allows for UI construction using composable functions.
+
 By leveraging Jetpack Compose, **Stocki** achieves a more streamlined and efficient UI development process, empowering developers to create engaging and responsive user interfaces with less boilerplate code.
 
 ## Architecture
