@@ -1,4 +1,4 @@
-package com.example.stocki.market
+package com.example.stocki.market.Stocks
 
 import com.example.stocki.data.pojos.AggregateData
 sealed class MarketState {

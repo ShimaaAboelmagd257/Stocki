@@ -1,4 +1,4 @@
-package com.example.stocki.market
+package com.example.stocki.market.Stocks
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -17,11 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.stocki.NavigationRoute
-import com.example.stocki.utility.Constans
 
 @Composable
-fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel() ,   navController: NavController , onTickerClicked: (ticker :String) -> Unit) {
+fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel(), onTickerClicked: (ticker :String) -> Unit) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -32,7 +30,6 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel() ,   navController
 
     when (val marketState = state) {
         is MarketState.Loading -> {
-            // Display loading indicator
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
         is MarketState.Data -> {
@@ -40,15 +37,11 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel() ,   navController
             LazyColumn {
                 items(dataList.size) { index ->
                     val aggregateData = dataList[index]
-                    //val aggregateData = marketState.data[index]
                     Card(
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxWidth()
                             .clickable {
-                                // Navigate to TickerInfoScreen when card is clicked
-                              //  navController.navigate("${NavigationRoute.TICKER_INFO.route}/${aggregateData.t}")
-                                //
                                 onTickerClicked(aggregateData.T)
                                 Log.d("StockiMarket", "onTickerClicked ${aggregateData.T}")
                             }
@@ -71,13 +64,10 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel() ,   navController
             }
         }
         is MarketState.Error -> {
-            // Display error message
             Text(marketState.error, modifier = Modifier.padding(16.dp))
         }
     }
 
-    /*Button(onClick = { viewModel.fetchData("") }, modifier = Modifier.padding(16.dp)) {
-        Text("Fetch Data")
-    }*/
+
 }
 
