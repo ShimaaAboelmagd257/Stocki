@@ -1,6 +1,6 @@
 # Stocki
 
-Stocki is an Android application designed to provide users with real-time stock market information and ticker details.
+**Stocki** is an Android application designed to provide users with real-time stock market information and ticker details.
 
 ## Features
 
@@ -11,11 +11,11 @@ Stocki is an Android application designed to provide users with real-time stock 
 - **Firebase Integration:** Utilizes Firebase services for enhanced authentication and data management.
 - **Profile Page:** Personalized profile page for users to manage their preferences and settings.
 
-## User Interface (UI) with Jetpack Compose
+## User Interface with Jetpack Compose
 
 - **Stocki's** user interface is built using Jetpack Compose, the modern toolkit for building native Android UI. Instead of traditional XML layout files, Jetpack Compose allows for UI construction using composable functions.
 
-By leveraging Jetpack Compose, **Stocki** achieves a more streamlined and efficient UI development process, empowering developers to create engaging and responsive user interfaces with less boilerplate code.
+   By leveraging Jetpack Compose, **Stocki** achieves a more streamlined and efficient UI development process, empowering developers to create engaging and responsive user interfaces with less boilerplate code.
 
 ## Architecture
 
@@ -46,5 +46,5 @@ Ensure you have the necessary API keys and configurations set up for Firebase au
 
 ## Contributions
 
-Contributions to Stocki are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve the application.
+Contributions to **Stocki** are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve the application.
 
