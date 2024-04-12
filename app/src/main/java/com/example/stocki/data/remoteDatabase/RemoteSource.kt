@@ -1,10 +1,17 @@
 package com.example.stocki.data.remoteDatabase
 
 import com.example.stocki.data.pojos.*
+import com.example.stocki.data.pojos.marketData.ExponintialMovingAverage
+import com.example.stocki.data.pojos.marketData.MovingAverageDivergence
+import com.example.stocki.data.pojos.marketData.RelativeStengthIndex
+import com.example.stocki.data.pojos.marketData.SimpleMovingAverage
 import com.example.stocki.data.pojos.refrenceData.ConditionResponse
 import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
 import com.example.stocki.data.pojos.refrenceData.FinancialsResponse
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 import javax.inject.Singleton
 
 @Singleton
@@ -15,8 +22,7 @@ interface RemoteSource {
         multiplier: Int,
         timespan: String,
         from: String,
-        to: String,
-
+        to: String
     ): PolygonApiResponse
 
     suspend fun getGroupedDailyBars(date: String): GroupedDailyBars
@@ -82,4 +88,23 @@ interface RemoteSource {
 
     suspend fun getExchanges(
     ): Exchange
+
+    suspend fun getSMA(
+         stockTicker: String
+    ): SimpleMovingAverage
+
+    suspend fun getEMA(
+         stockTicker: String,
+         timespan: String
+    ): ExponintialMovingAverage
+
+    suspend fun getMACD(
+         stockTicker: String,
+         timespan: String
+    ): MovingAverageDivergence
+
+    suspend fun getRSI(
+         stockTicker: String,
+         timespan: String
+    ): RelativeStengthIndex
 }

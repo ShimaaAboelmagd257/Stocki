@@ -2,6 +2,10 @@ package com.example.stocki.data.remoteDatabase
 
 import android.util.Log
 import com.example.stocki.data.pojos.*
+import com.example.stocki.data.pojos.marketData.ExponintialMovingAverage
+import com.example.stocki.data.pojos.marketData.MovingAverageDivergence
+import com.example.stocki.data.pojos.marketData.RelativeStengthIndex
+import com.example.stocki.data.pojos.marketData.SimpleMovingAverage
 import com.example.stocki.data.pojos.refrenceData.ConditionResponse
 import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
@@ -18,6 +22,16 @@ class StockiClient @Inject  constructor(): RemoteSource {
         RetrofitHelper.retrofitInstance.create(StockiService::class.java)
     }
     private val apiKey: String = Constans.Api_Key
+    private val adjusted:Boolean = Constans.ADUJTED
+    private val order:String  = Constans.ORDER
+    private val seriesType :String = Constans.SERIES_TYPE
+    private val window:Int = Constans.WINDOW
+    private val  shortWindow: Int = Constans.SHORT_WINDOW
+    private val longWindow: Int = Constans.LONG_WINDOW
+    private val  signalWindow: Int = Constans.SIGNAL_WINDOW
+    private val timespan:String = Constans.TIMESPAN
+
+
     companion object {
         @Volatile
         private var INSTANCE: StockiClient? = null
@@ -38,7 +52,7 @@ class StockiClient @Inject  constructor(): RemoteSource {
         from: String,
         to: String
     ): PolygonApiResponse {
-        return stockiService.getAggregateBars(stocksTicker, multiplier, timespan, from, to, apiKey)
+        return stockiService.getAggregateBars(stocksTicker, multiplier, timespan, from, to, "desc" ,apiKey)
     }
 
     override suspend fun getGroupedDailyBars(date: String): GroupedDailyBars {
@@ -126,6 +140,35 @@ class StockiClient @Inject  constructor(): RemoteSource {
 
     override suspend fun getExchanges(): Exchange {
         return stockiService.getExchanges(apiKey)
+    }
+
+    override suspend fun getSMA(
+        stockTicker: String,
+    ): SimpleMovingAverage {
+        Log.d("StockiClint", "getSMA ${stockiService.getSMV(  stockTicker,timespan ,adjusted ,window,seriesType,order,apiKey)} ")
+
+        return stockiService.getSMV(  stockTicker,timespan ,adjusted ,window,seriesType,order,apiKey)
+    }
+
+    override suspend fun getEMA(
+        stockTicker: String,
+        timespan: String,
+    ): ExponintialMovingAverage {
+        return stockiService.getEMA(stockTicker,timespan , adjusted ,window,seriesType,order,apiKey)
+    }
+
+    override suspend fun getMACD(
+        stockTicker: String,
+        timespan: String
+    ): MovingAverageDivergence {
+           return stockiService.getMACD(stockTicker,timespan,adjusted,shortWindow,longWindow,signalWindow,seriesType,order,apiKey)
+    }
+
+    override suspend fun getRSI(
+        stockTicker: String,
+        timespan: String
+    ): RelativeStengthIndex {
+        return stockiService.getRSI(stockTicker,timespan , adjusted ,window,seriesType,order,apiKey)
     }
 
 }

@@ -3,6 +3,10 @@ package com.example.stocki.data.repository
 import android.util.Log
 import com.example.stocki.data.localDatabase.localSource
 import com.example.stocki.data.pojos.*
+import com.example.stocki.data.pojos.marketData.ExponintialMovingAverage
+import com.example.stocki.data.pojos.marketData.MovingAverageDivergence
+import com.example.stocki.data.pojos.marketData.RelativeStengthIndex
+import com.example.stocki.data.pojos.marketData.SimpleMovingAverage
 import com.example.stocki.data.pojos.refrenceData.ConditionResponse
 import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
@@ -147,4 +151,27 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         Log.d("StockiRepo", "getExchanges " )
         return remoteSource.getExchanges()
     }
+    suspend fun getSMA(
+        stockTicker: String,
+        /*timespan:String*/
+    ): SimpleMovingAverage{
+        return remoteSource.getSMA(stockTicker/*,timespan*/)
+    }
+
+    suspend fun getEMA(
+        stockTicker: String,
+        timespan: String
+    ): ExponintialMovingAverage{return remoteSource.getEMA(stockTicker,timespan)}
+
+    suspend fun getMACD(
+        stockTicker: String,
+        timespan: String
+    ): MovingAverageDivergence{
+        return remoteSource.getMACD(stockTicker,timespan)
+    }
+
+    suspend fun getRSI(
+        stockTicker: String,
+        timespan: String
+    ): RelativeStengthIndex{return remoteSource.getRSI(stockTicker,timespan)}
 }

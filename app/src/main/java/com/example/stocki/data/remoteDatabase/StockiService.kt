@@ -1,6 +1,10 @@
 package com.example.stocki.data.remoteDatabase
 
 import com.example.stocki.data.pojos.*
+import com.example.stocki.data.pojos.marketData.ExponintialMovingAverage
+import com.example.stocki.data.pojos.marketData.MovingAverageDivergence
+import com.example.stocki.data.pojos.marketData.RelativeStengthIndex
+import com.example.stocki.data.pojos.marketData.SimpleMovingAverage
 import com.example.stocki.data.pojos.refrenceData.ConditionResponse
 import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
@@ -18,6 +22,7 @@ interface StockiService {
         @Path("timespan") timespan: String,
         @Path("from") from: String,
         @Path("to") to: String,
+        @Query("order") order: String,
         @Query("apiKey") apiKey: String
     ): PolygonApiResponse
 
@@ -129,6 +134,55 @@ interface StockiService {
     @GET("/v3/reference/exchanges")
     suspend fun getExchanges(
         @Query("apiKey") apiKey: String
-
     ): Exchange
+
+    @GET("/v1/indicators/sma/{stockTicker}")
+    suspend fun getSMV(
+        @Path("stockTicker") stockTicker: String,
+    //    @Query("timestamp") timestamp: String?, // Optional parameter
+        @Query("timespan") timespan: String,
+        @Query("adjusted") adjusted: Boolean,
+        @Query("window") window: Int,
+        @Query("series_type") series_type: String,
+        @Query("order") order: String,
+        @Query("apiKey") apiKey: String
+    ): SimpleMovingAverage
+
+    @GET("/v1/indicators/ema/{stockTicker}")
+    suspend fun getEMA(
+        @Path("stockTicker") stockTicker: String,
+        @Query("timespan") timespan: String,
+        @Query("adjusted") adjusted: Boolean,
+        @Query("window") window: Int,
+        @Query("series_type") seriesType: String,
+        @Query("order") order: String,
+        @Query("apiKey") apiKey: String
+
+        ): ExponintialMovingAverage
+
+    @GET("/v1/indicators/macd/{stockTicker}")
+    suspend fun getMACD(
+        @Path("stockTicker") stockTicker: String,
+        @Query("timespan") timespan: String,
+        @Query("adjusted") adjusted: Boolean,
+        @Query("short_window") shortWindow: Int,
+        @Query("long_window") longWindow: Int,
+        @Query("signal_window") signalWindow: Int,
+        @Query("series_type") seriesType: String,
+        @Query("order") order: String,
+        @Query("apiKey") apiKey: String
+
+        ): MovingAverageDivergence
+
+    @GET("/v1/indicators/rsi/{stockTicker}")
+    suspend fun getRSI(
+        @Path("stockTicker") stockTicker: String,
+        @Query("timespan") timespan: String,
+        @Query("adjusted") adjusted: Boolean,
+        @Query("window") window: Int,
+        @Query("series_type") seriesType: String,
+        @Query("order") order: String,
+        @Query("apiKey") apiKey: String
+        ): RelativeStengthIndex
+
 }
