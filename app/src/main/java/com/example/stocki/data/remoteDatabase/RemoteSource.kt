@@ -94,17 +94,14 @@ interface RemoteSource {
     ): SimpleMovingAverage
 
     suspend fun getEMA(
-         stockTicker: String,
-         timespan: String
+         stockTicker: String
     ): ExponintialMovingAverage
 
     suspend fun getMACD(
-         stockTicker: String,
-         timespan: String
+         stockTicker: String
     ): MovingAverageDivergence
 
     suspend fun getRSI(
-         stockTicker: String,
-         timespan: String
+         stockTicker: String
     ): RelativeStengthIndex
 }

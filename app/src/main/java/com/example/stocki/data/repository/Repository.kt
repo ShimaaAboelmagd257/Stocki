@@ -152,26 +152,22 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         return remoteSource.getExchanges()
     }
     suspend fun getSMA(
-        stockTicker: String,
-        /*timespan:String*/
+        stockTicker: String
     ): SimpleMovingAverage{
-        return remoteSource.getSMA(stockTicker/*,timespan*/)
+        return remoteSource.getSMA(stockTicker)
     }
 
     suspend fun getEMA(
-        stockTicker: String,
-        timespan: String
-    ): ExponintialMovingAverage{return remoteSource.getEMA(stockTicker,timespan)}
+        stockTicker: String
+    ): ExponintialMovingAverage{return remoteSource.getEMA(stockTicker)}
 
     suspend fun getMACD(
-        stockTicker: String,
-        timespan: String
+        stockTicker: String
     ): MovingAverageDivergence{
-        return remoteSource.getMACD(stockTicker,timespan)
+        return remoteSource.getMACD(stockTicker)
     }
 
     suspend fun getRSI(
-        stockTicker: String,
-        timespan: String
-    ): RelativeStengthIndex{return remoteSource.getRSI(stockTicker,timespan)}
+        stockTicker: String
+    ): RelativeStengthIndex{return remoteSource.getRSI(stockTicker)}
 }

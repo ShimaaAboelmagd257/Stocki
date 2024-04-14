@@ -54,15 +54,20 @@ import java.time.format.DateTimeFormatter
                 val values = smaResponse.results.values
                     when(val barStates = barStates){
                         is BarStates.Data -> {
-                            val closingPrices = barStates.data!!.map { it.c }.sorted().reversed()
+                            val closingPrices = barStates.data!!.map { it.c }//.sorted().reversed()
                             val timestamps = values.map { it.timestamp }
                             val smaPrices = values.map { it.value }
+                            Log.d("stockisma","closingPrices are ${closingPrices}")
+                            Log.d("stockisma","smaPrices are ${smaPrices}")
+
+                            Log.d("stockisma","timestamps are ${timestamps}")
+
                             if (isLandscape) {
                                 LineChart(
                                     closingPrices = closingPrices,
                                     timestamps = timestamps,
                                     smaValues = smaPrices,
-                                    chartWidth = 250.dp,
+                                    chartWidth = 700.dp,
                                     chartHeight = 200.dp
                                 )
                             }
@@ -164,7 +169,9 @@ import java.time.format.DateTimeFormatter
         //}
         // Calculate the step size for y-axis labels
         val yAxisStep = size.height / (closingPrices.size - 1)
-        // Draw y-axis labels for closing prices
+
+
+        /*// Draw y-axis labels for closing prices
         closingPrices.forEachIndexed { index, price ->
             val y = size.height - index * yAxisStep
             val x = -40f // Position to the left of the y-axis
@@ -206,9 +213,100 @@ import java.time.format.DateTimeFormatter
                     textSize = 12f // Adjust text size as needed
                 })
             }
+        }*/
+        // Determine the maximum width needed for the labels
+        val closingPriceLabelsWidth = closingPrices.maxOf { price ->
+            val textWidth = getTextWidth(String.format("%.2f", price), 12f)
+            textWidth
         }
+
+        val smaLabelsWidth = smaValues.maxOf { value ->
+            val textWidth = getTextWidth(String.format("%.2f", value), 12f)
+            textWidth
+        }
+
+// Determine the maximum width between closing prices and SMA values
+        val maxWidth = maxOf(closingPriceLabelsWidth, smaLabelsWidth)
+
+// Adjust the x-coordinate for closing prices and SMA values labels
+        val closingPriceLabelX = -maxWidth - 10f // Position to the left of the y-axis
+        val smaLabelX = size.width + 10f // Position to the right of the chart
+
+// Draw y-axis labels for closing prices
+        closingPrices.forEachIndexed { index, price ->
+            val y = size.height - index * yAxisStep
+
+            // Draw line marker for closing prices
+            drawLine(
+                color = Color.Black,
+                start = Offset(0f, y),
+                end = Offset(-5f, y)
+            )
+
+            // Draw closing price label
+            val text = String.format("%.2f", price) // Format closing price to 2 decimal places
+            drawIntoCanvas {
+                it.nativeCanvas.drawText(text, closingPriceLabelX, y, Paint().apply {
+                    color = Color.Black.toArgb()
+                    textAlign = Paint.Align.RIGHT
+                    textSize = 12f // Adjust text size as needed
+                })
+            }
+        }
+
+// Draw y-axis labels for SMA values
+        smaValues.forEachIndexed { index, value ->
+            val y = size.height - index * yAxisStep
+
+            // Draw line marker for SMA values
+            drawLine(
+                color = Color.Black,
+                start = Offset(size.width, y),
+                end = Offset(size.width + 5f, y)
+            )
+
+            // Draw SMA value label
+            val text = String.format("%.2f", value) // Format SMA value to 2 decimal places
+            drawIntoCanvas {
+                it.nativeCanvas.drawText(text, smaLabelX, y, Paint().apply {
+                    color = Color.Black.toArgb()
+                    textAlign = Paint.Align.LEFT
+                    textSize = 12f // Adjust text size as needed
+                })
+            }
+        }
+
+// Provide legends or labels to distinguish between closing prices and SMA values
+        val legendY = size.height / 2f
+        val legendX = size.width / 2f
+
+        drawIntoCanvas {
+            // Draw legend for closing prices
+            it.nativeCanvas.drawText("Closing Prices", legendX, legendY, Paint().apply {
+                color = Color.Black.toArgb()
+                textAlign = Paint.Align.RIGHT
+                textSize = 14f // Adjust text size as needed
+            })
+
+            // Draw legend for SMA values
+            it.nativeCanvas.drawText("SMA Values", legendX, legendY + 20f, Paint().apply {
+                color = Color.Black.toArgb()
+                textAlign = Paint.Align.RIGHT
+                textSize = 14f // Adjust text size as needed
+            })
+        }
+
+
+
     }
-        private fun DrawScope.drawLineGraph(
+// Function to calculate the width of a text string
+private fun getTextWidth(text: String, textSize: Float): Float {
+    val paint = Paint()
+    paint.textSize = textSize
+    return paint.measureText(text)
+}
+
+private fun DrawScope.drawLineGraph(
             values: List<Double>,
             timestamps: List<Long>,
             scaleX: Float,

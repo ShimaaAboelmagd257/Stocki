@@ -152,21 +152,18 @@ class StockiClient @Inject  constructor(): RemoteSource {
 
     override suspend fun getEMA(
         stockTicker: String,
-        timespan: String,
     ): ExponintialMovingAverage {
         return stockiService.getEMA(stockTicker,timespan , adjusted ,window,seriesType,order,apiKey)
     }
 
     override suspend fun getMACD(
-        stockTicker: String,
-        timespan: String
+        stockTicker: String
     ): MovingAverageDivergence {
            return stockiService.getMACD(stockTicker,timespan,adjusted,shortWindow,longWindow,signalWindow,seriesType,order,apiKey)
     }
 
     override suspend fun getRSI(
-        stockTicker: String,
-        timespan: String
+        stockTicker: String
     ): RelativeStengthIndex {
         return stockiService.getRSI(stockTicker,timespan , adjusted ,window,seriesType,order,apiKey)
     }
