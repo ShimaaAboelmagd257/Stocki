@@ -12,14 +12,12 @@ import javax.inject.Singleton
 class SigninUseCase @Inject constructor(private val userRepository: UserRepository ,val sharedPreference: SharedPreference) {
 
 
-suspend fun signIn(intent: SigninIntent): Boolean {
+suspend fun signIn(intent: SigninIntent): SigninState {
         return withContext(Dispatchers.IO) {
-            // Validate user input
             if (!isValidInput(intent)) {
-                return@withContext false
+                return@withContext SigninState.Error("NotValidInput")
             }
 
-            // Check if the user credentials are valid
             val userExists = userRepository.signIn(intent.email, intent.password)
             sharedPreference.addBoolean(Constans.SAVED_SIGNIN , true)
             Log.d("StockiSIU", "processSignin: ${  intent.email+ intent.password } " )
@@ -27,25 +25,9 @@ suspend fun signIn(intent: SigninIntent): Boolean {
         }
     }
 
-   /* suspend fun signIn(intent: SigninIntent): Boolean {
-        return withContext(Dispatchers.IO) {
-            // Validate user input
-            if (!isValidInput(intent)) {
-                return@withContext false
-            }
 
-            // Check if the user credentials are valid
-            val userExists = userRepository.signIn(intent.email, intent.password)
-            if (!userExists) {
-                return@withContext false
-            }
-
-            return@withContext true
-        }
-    }*/
 
     private fun isValidInput(intent: SigninIntent): Boolean {
-        // Perform validation logic here
         return intent.email.isNotBlank() && intent.password.isNotBlank()
     }
 }

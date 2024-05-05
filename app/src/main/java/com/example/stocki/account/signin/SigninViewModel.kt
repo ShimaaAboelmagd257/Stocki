@@ -16,17 +16,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SigninViewModel @Inject constructor (
-    /*private val userRepository: UserRepository , val sharedPreference: SharedPreference*/
     private val signInUseCase: SigninUseCase) :ViewModel(){
 
 
-   // private val signipUseCase = SigninUseCase(userRepository , sharedPreference)
     private val _viewState = MutableStateFlow<SigninState>(SigninState.Idle)
     val viewState: StateFlow<SigninState> = _viewState
-
-    /*private val _viewState = MutableLiveData<SigninState>()
-    val viewState: LiveData<SigninState> get() = _viewState*/
-
 
     fun processSignin(intent: SigninIntent) {
     _viewState.value = SigninState.Loading
@@ -34,8 +28,7 @@ class SigninViewModel @Inject constructor (
     viewModelScope.launch {
            try {
                val result = signInUseCase.signIn(intent)
-               _viewState.value = if (result) SigninState.Success else SigninState.Error("Failed to sign in")
-             //  if (result) sharedPreference.addBoolean(Constans.SAVED_SIGNIN,true)
+               _viewState.value = result
 
            }  catch (e:Exception) {
                _viewState.value = SigninState.Error(e.message ?: "Unknown error")

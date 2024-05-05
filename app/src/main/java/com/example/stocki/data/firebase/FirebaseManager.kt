@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings.Global.getString
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.pojos.account.UserInfo
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -51,11 +53,10 @@ class FirebaseManager @Inject constructor( context: Context) {
         }
     }
 
-    suspend fun signIn(email: String, pass: String): Boolean {
+    suspend fun signIn(email: String, pass: String): SigninState {
         val splitEmail = email.split("\\.".toRegex()).toTypedArray()
         val root = splitEmail[0]
 
-      //  val databaseReference = FirebaseDatabase.getInstance().getReference("User")
         return try {
             val snapshot = usersReference.get().await()
             if (snapshot.exists()) {
@@ -65,21 +66,21 @@ class FirebaseManager @Inject constructor( context: Context) {
 
                     if (userModel1 != null && userModel1.password == pass && userModel1.email == email) {
                         Log.d("StockiFirebaseDataHandle", "Login success")
-                        true
+                        SigninState.Success
                     } else {
                         Log.d("StockiFirebaseDataHandle", "Invalid credentials")
-                        false
+                        SigninState.WrongPassword
                     }
                 } else {
                     Log.d("StockiFirebaseDataHandle", "User data not found")
-                    false
+                    SigninState.UserNotFound
                 }
             } else {
-                false
+                SigninState.Error("Error")
             }
         } catch (e: Exception) {
             Log.e("StockiFirebaseDataHandle", "Error: ${e.message}")
-            false
+            SigninState.Error(e.message!!)
         }
     }
 
@@ -90,7 +91,6 @@ class FirebaseManager @Inject constructor( context: Context) {
             val firebaseCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null)
             mAuth.signInWithCredential(firebaseCredential).await()
             Log.d("StockiFirebaseDataHandle", "signUpWithGoogle: " + account)
-
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -191,178 +191,3 @@ class FirebaseManager @Inject constructor( context: Context) {
         }
     }
 }
-/*fun insertUser(user: UserInfo, callback: FirebaseCallback) {
-       usersReference.child(user.uid.toString()).setValue(user)
-           .addOnCompleteListener { task ->
-               if (task.isSuccessful) {
-                   callback.onSuccess()
-               } else {
-                   callback.onFailure(task.exception?.message ?: "Unknown error")
-               }
-           }
-   }*/
-
-/* fun getUser(uid: Int, callback: FirebaseUserCallback) {
-     usersReference.child(uid.toString()).addListenerForSingleValueEvent(object : ValueEventListener {
-         override fun onDataChange(dataSnapshot: DataSnapshot) {
-             val user = dataSnapshot.getValue(UserInfo::class.java)
-             if (user != null) {
-                 callback.onSuccess(user)
-             } else {
-                 callback.onNotFound()
-             }
-         }
-
-         override fun onCancelled(databaseError: DatabaseError) {
-             callback.onFailure(databaseError.message)
-         }
-     })
- }*/
-
-/* suspend fun getUser(uid: Int): UserInfo? {
-     return try {
-        // val user = dataSnapshot.getValue<UserInfo>()
-         val dataSnapshot = usersReference.child(uid.toString())//.getValue(UserInfo::class.java).await()
-         dataSnapshot.getValue(UserInfo::class.java)
-     } catch (e: Exception) {
-         null
-     }
- }
-*/
-/*fun checkUserExists(email: String, callback: UserExistCallback) {
-    usersReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            callback.onResult(dataSnapshot.exists())
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {
-            callback.onFailure(databaseError.message)
-        }
-    })
-}*/
-
-/*fun createUser(email: String, password: String, callback: AuthCallback) {
-       mAuth.createUserWithEmailAndPassword(email, password)
-           .addOnCompleteListener { task ->
-               if (task.isSuccessful) {
-                   callback.onAuthSuccess()
-               } else {
-                   task.exception?.let { callback.onAuthFailure(it.message ?: "Unknown error") }
-               }
-           }
-   }
-
-   fun signIn(email: String, password: String, callback: AuthCallback) {
-       mAuth.signInWithEmailAndPassword(email, password)
-           .addOnCompleteListener { task ->
-               if (task.isSuccessful) {
-                   callback.onAuthSuccess()
-               } else {
-                   task.exception?.let { callback.onAuthFailure(it.message ?: "Unknown error") }
-               }
-           }
-   }
-*/
-
-/*suspend fun signIn(email: String, password: String): Boolean {
-        return try {
-            mAuth.signInWithEmailAndPassword(email, password).await()
-            Log.d("StockiFirebaseDataHandle", "signIn: " + email + password)
-
-            true
-        } catch (e: Exception) {
-            Log.d("StockiFirebaseDataHandle", "erroe signIn: " + e.message)
-
-            false
-        }
-    }*/
-/*private fun setUserValues(databaseReference: DatabaseReference, userPojo: UserInfo) {
-    // Set user data to the DatabaseReference
-    databaseReference.setValue(userPojo)
-}*/
-
-/*
-suspend fun insertUser(user: UserInfo): Boolean {
-   return try {
-       // Get the user's UID from FirebaseAuth
-       val uid = mAuth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
-
-       // Set the user data under a child node with the user's UID
-       usersReference.child(uid).setValue(user).await()
-       Log.d("StockiFirebaseDataHandle", "User inserted: $user")
-
-       true
-   } catch (e: Exception) {
-       Log.e("StockiFirebaseDataHandle", "Error inserting user: $e")
-       false
-   }
-}*/
-/*suspend fun insertUser(user: UserInfo): Boolean {
-    return try {
-        usersReference.child(user.uid.toString()).setValue(user).await()
-        Log.d("StockiFirebaseDataHandle", "Value inserted is: " + user.email)
-
-        true
-    } catch (e: Exception) {
-        false
-    }
-}*/
-
-/* suspend fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
-       try {
-           // Configure Google Sign-In options
-           val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-               .requestIdToken("124054707468-7jeb0b7nk3s385ldun1vfbrbqg9ocmjk.apps.googleusercontent.com")
-               .requestEmail()
-               .build()
-
-           // Initialize GoogleSignInClient with the configured options
-           val googleSignInClient = GoogleSignIn.getClient(context, gso)
-
-           // Start Google Sign-In activity
-           val signInIntent = googleSignInClient.signInIntent
-           activityResultLauncher.launch(signInIntent)
-       } catch (e: Exception) {
-           e.printStackTrace()
-       }
-   }*/
-/*suspend fun login(context: Context, email: String, pass: String): Boolean {
-        val splitEmail = email.split("\\.".toRegex()).toTypedArray()
-        val root = splitEmail[0]
-
-        val databaseReference = FirebaseDatabase.getInstance().getReference("User")
-        var isSucceeded = false
-
-        try {
-            val snapshot = databaseReference.get().await()
-            if (snapshot.exists()) {
-                val userSnapshot = snapshot.child(root)
-                if (userSnapshot.exists()) {
-                    try {
-                        val userModel1 = userSnapshot.getValue(UserInfo::class.java)
-
-                        if (userModel1 != null && userModel1.password == pass && userModel1.email == email) {
-                            isSucceeded = true
-
-                            Log.d("FirebaseData", "Login success")
-
-                        } else {
-                            isSucceeded = false
-                            Log.d("FirebaseData", "Invalid credentials")
-                        }
-                    } catch (e: DatabaseException) {
-                        Log.e("FirebaseData", "Error converting to UserPojo: " + e.message)
-                        isSucceeded = false
-                    }
-                } else {
-                    Log.d("FirebaseData", "User data not found")
-                    isSucceeded = false
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("FirebaseData", "Database error: " + e.message)
-            isSucceeded = false
-        }
-
-        return isSucceeded
-    }*/

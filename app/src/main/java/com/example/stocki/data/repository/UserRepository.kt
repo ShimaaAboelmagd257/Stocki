@@ -3,6 +3,7 @@ package com.example.stocki.data.repository
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.firebase.FirebaseManager
 import com.example.stocki.data.pojos.account.UserInfo
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -28,7 +29,7 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
         return firebaseManager.createUser(email, password)
     }
 
-    suspend fun signIn(email: String, password: String): Boolean {
+    suspend fun signIn(email: String, password: String): SigninState {
         Log.d("StockiURepo", "signIn: ${  email  + password } ${firebaseManager.signIn(email, password)} " )
         return firebaseManager.signIn(email, password)
     }
