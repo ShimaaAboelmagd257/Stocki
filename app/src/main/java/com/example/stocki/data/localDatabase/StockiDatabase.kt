@@ -6,13 +6,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.stocki.data.pojos.BrandingSaved
+import com.example.stocki.data.pojos.Company
 import com.example.stocki.data.pojos.TickerTypes
 
-@Database(entities = [TickerTypes::class], version = 7)
+@Database(entities = [TickerTypes::class , BrandingSaved::class ], version = 11)
 abstract class StockiDatabase : RoomDatabase() {
 
     abstract fun TickerDAO() : TickerDAO
-
+    abstract fun TickerLogoDAO() :TickerLogoDAO
+    //abstract fun TickerInfoDAO() : TickerInfoDAO
     companion object {
         @Volatile
         private var INSTANCE: StockiDatabase? = null

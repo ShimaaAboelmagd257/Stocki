@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
-fun splitsView (viewModel: SplitsViewmodel = hiltViewModel()) {
+fun SplitsView (viewModel: SplitsViewmodel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -40,15 +40,14 @@ fun splitsView (viewModel: SplitsViewmodel = hiltViewModel()) {
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxWidth()
-
                     ) {
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            Text("executionDate: ${splits.executionDate}}")
-                            Text("splitFrom Price: ${splits.splitFrom}")
-                            Text("splitTo Price: ${splits.splitTo}")
                             Text("ticker: ${splits.ticker}")
+                            Text("executionDate: ${splits.execution_date}")
+                            Text("splitFrom Price: ${splits.split_from}")
+                            Text("splitTo Price: ${splits.split_to}")
 
                         }
                     }

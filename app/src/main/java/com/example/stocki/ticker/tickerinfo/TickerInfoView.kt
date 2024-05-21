@@ -22,7 +22,7 @@ fun tickerInfoView(ticker: String,viewModel: TickerInfoViewModel = hiltViewModel
     LaunchedEffect(ticker) {
         onFetchData(ticker)
         Log.d("StockitickerInfoView", "onFetchData ${ticker}")
-
+        //viewModel.fetchTickerLogo()
     }
     when (val tickerInfoState = state) {
         is TickerInfoState.Loading -> {
@@ -32,34 +32,38 @@ fun tickerInfoView(ticker: String,viewModel: TickerInfoViewModel = hiltViewModel
 
             val companies = tickerInfoState.data
             Column(modifier = Modifier.padding(16.dp)) {
-                companies.forEach { company ->
+                companies?.forEach { company ->
                     Text(text = "Company Name: ${company.name}")
                     Text(text = "Ticker: ${company.ticker}")
                     Text(text = "Description: ${company.description}")
                     Text(text = "Active: ${company.active}")
-                    Text(text = "Address: ${company.address.address1}, ${company.address.city}, ${company.address.state}, ${company.address.postalCode}")
-                    Text(text = "Currency Name: ${company.currencyName}")
-                    Text(text = "List Date: ${company.listDate ?: "Not available"} ")
+                    Text(text = "Address: ${company.address?.address1}, ${company.address?.city}, ${company.address?.state}, ${company.address?.postal_code}")
+                    Text(text = "Currency Name: ${company.currency_name}")
+                    Text(text = "List Date: ${company.list_date ?: "Not available"} ")
                     Text(text = "Locale: ${company.locale}")
                     Text(text = "Market: ${company.market}")
-                    Text(text = "Market Cap: ${company.marketCap}")
-                    Text(text = "Phone Number: ${company.phoneNumber}")
-                    Text(text = "Round Lot: ${company.roundLot}")
-                    Text(text = "SIC Code: ${company.sicCode ?: "Not available" }")
-                    Text(text = "SIC Description: ${company.sicDescription ?: "Not available"}")
-                    Text(text = "Ticker Root: ${company.tickerRoot ?: "Not available" }")
-                    Text(text = "Total Employees: ${company.totalEmployees}")
+                    Text(text = "Market Cap: ${company.market_cap}")
+                    Text(text = "Phone Number: ${company.phone_number}")
+                    Text(text = "Round Lot: ${company.round_lot}")
+                    Text(text = "SIC Code: ${company.sic_code ?: "Not available" }")
+                    Text(text = "SIC Description: ${company.sic_description ?: "Not available"}")
+                    Text(text = "Ticker Root: ${company.ticker_root ?: "Not available" }")
+                    Text(text = "Total Employees: ${company.total_employees}")
                     Text(text = "Type: ${company.type}")
-                    Text(text = "Weighted Shares Outstanding: ${company.weightedSharesOutstanding}")
-                    Text(text = "Homepage URL: ${company.homepageUrl ?: "Not available"}")
-                    Text(text = "Primary Exchange: ${company.primaryExchange}")
+                    Text(text = "Weighted Shares Outstanding: ${company.weighted_shares_outstanding}")
+                    Text(text = "Homepage URL: ${company.homepage_url ?: "Not available"}")
+                    Text(text = "Primary Exchange: ${company.primary_exchange}")
                     Spacer(modifier = Modifier.height(8.dp)) // Add spacing between companies
                 }
             }
 
         }
 
-        is TickerInfoState.Error -> {}
+        is TickerInfoState.Error -> {
+            Log.d("StockitickerInfoState", "tickerInfoState  ${tickerInfoState.error}")
+            Text(tickerInfoState.error, modifier = Modifier.padding(200.dp))
+
+        }
 
 
         else -> {}

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.stocki.R
@@ -27,7 +28,6 @@ import com.example.stocki.account.signup.SignupViewModel
        // signUpViewModel: SignupViewModel
 ) {
    val signUpViewModel: SignupViewModel = hiltViewModel()
-    val scope = rememberCoroutineScope()
 
     val signInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -40,19 +40,19 @@ import com.example.stocki.account.signup.SignupViewModel
             modifier = Modifier.fillMaxSize()
         ) {
             // Background photo
-            /*Image(
-                painter = painterResource(id = androidx.appcompat.R.drawable.),
+            Image(
+                painter = painterResource(id = R.drawable.greenmainback),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
-            )*/
+            )
 
             // Content overlay
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Text "Already have an account?"
@@ -67,10 +67,14 @@ import com.example.stocki.account.signup.SignupViewModel
                 Button(
                     onClick = { onSignInClick() },
                     modifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                        .width(250.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
+
                 ) {
-                    Text(text = "Sign In")
+                    Text(text = "Sign In",
+                    color = Color.White)
+
                 }
 
                 // Sign Up button
@@ -78,11 +82,13 @@ import com.example.stocki.account.signup.SignupViewModel
                     onClick = { onSignUpClick() },
                     modifier = Modifier
                         .padding(bottom = 8.dp)
-                        .fillMaxWidth()
-
+                        .width(250.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
                 ) {
 
-                    Text(text = "Sign Up")
+                    Text(text = "Sign Up" ,
+                        color = Color.White)
+
                 }
 
                 // Sign Up with Google button
@@ -90,21 +96,24 @@ import com.example.stocki.account.signup.SignupViewModel
                     onClick = {
                        signUpViewModel.signInWithGoogle(signInLauncher)
                         Log.d("StockiEV", "signInWithGoogleBTN: ${  signInLauncher } " )
-
-
                     },
-                    modifier = Modifier.fillMaxWidth()
+
+
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
+                        Image(
                             painter = painterResource(id = R.drawable.googlesignn),
                             contentDescription = "",
-                            tint = Color.Transparent,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(45.dp)
                         )
-                    }
+
                 }
             }
         }
     }
+
+@Preview
+@Composable
+fun EntranceScreen () {
+
+}
 

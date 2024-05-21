@@ -15,21 +15,17 @@ class SearchUsecase @Inject constructor(private val repository: Repository) {
     suspend operator fun invoke(markets: List<String>): SearchState {
         return withContext(Dispatchers.IO) {
             try {
-                // Attempt to fetch data locally
-              val localData = repository.getAllTickerTypes()
+                val localData = repository.getAllTickerTypes()
 
                 if (localData.isNotEmpty()) {
-                    // Data found locally, return it
                     SearchState.Data(localData)
                 } else {
-                    // No local data, fetch remotely
                     val remoteData = mutableListOf<TickerTypes>()
 
                     markets.forEach { market ->
-                        // Fetch data for each market
                         val data = repository.getTicker(market)
                         remoteData.addAll(data)
-                        Log.d("SearchUsecase", "remoteData  ${remoteData.size}" )
+                        Log.d("SearchUsecase", "remoteData  ${remoteData.size}")
 
                     }
 
@@ -37,13 +33,33 @@ class SearchUsecase @Inject constructor(private val repository: Repository) {
                     repository.insertTypes(remoteData)
                     SearchState.Data(remoteData)
 
-                 }
+                }
             } catch (e: Exception) {
                 SearchState.Error(e.message ?: "An error occurred")
             }
         }
     }
-}
+
+    @SuppressLint("SuspiciousIndentation")
+    suspend  fun getAllTickers(): SearchState {
+        return withContext(Dispatchers.IO) {
+            try {
+                val localData = repository.getAllTickerTypes()
+
+                if (localData.isNotEmpty()) {
+                    SearchState.Data(localData)
+                } else {
+                    SearchState.Error("No data available")
+                }
+            }catch (e: Exception) {
+                    SearchState.Error(e.message ?: "An error occurred")
+                }
+            }
+        }
+
+
+    }
+
 
 
 

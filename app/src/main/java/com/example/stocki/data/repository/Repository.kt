@@ -12,14 +12,45 @@ import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
 import com.example.stocki.data.pojos.refrenceData.FinancialsResponse
 import com.example.stocki.data.remoteDatabase.RemoteSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class Repository @Inject constructor(private val remoteSource: RemoteSource , private val localSource: localSource) {
 
-    fun getAllTickerTypes(/*market: String*/): List<TickerTypes>{
-        return localSource.getgetAllTickerTypes(/*market*/)
+ /*   fun getAllTickerInfo(): List<Company>{
+        return localSource.getAllTickerInfo()
+    }
+    suspend fun insertTickerInfo(company: List<Company>){
+        company.forEach { ticker ->
+            //  Log.d("StockiRepo", "insertTickerLogo: logoUrl = ${ticker.branding.logoUrl}, iconUrl = ${ticker.branding.iconUrl}")
+        }
+        localSource.insertTickerInfo(company)
+
+    }*/
+    suspend fun getTickerLogo(ticker : String): BrandingSaved? {
+     return withContext(Dispatchers.IO) {
+         localSource.getTickerLogo(ticker)
+     }
+    }
+    suspend fun getAllTickerLogo(): List<BrandingSaved>{
+                 return withContext(Dispatchers.IO) {
+                     localSource.getAllTickerLogo()
+                 }
+    }
+    suspend fun insertTickerLogo(brandingSaved: List<BrandingSaved>){
+        brandingSaved.forEach { ticker ->
+           Log.d("StockiRepo", "insertTickerLogo: logoUrl = ${ticker.logoUrl}, iconUrl = ${ticker.iconUrl}")
+        }
+        withContext(Dispatchers.IO) {
+            localSource.insertTickerLogo(brandingSaved)
+        }
+
+    }
+    fun getAllTickerTypes(): List<TickerTypes>{
+        return localSource.getgetAllTickerTypes()
     }
     suspend fun insertTypes(tickerTypes: List<TickerTypes>){
         tickerTypes.forEach { ticker ->

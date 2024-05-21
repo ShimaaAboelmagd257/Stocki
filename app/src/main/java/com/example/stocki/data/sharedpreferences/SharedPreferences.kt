@@ -10,7 +10,9 @@ class SharedPreferences @Inject constructor(private val context: Context) :Share
     private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences("SharedPreferences", Context.MODE_PRIVATE)
     }
-
+    fun saveUrl(key: String , url: String) {
+        sharedPreferences.edit().putString(key, url).apply()
+    }
     override fun addString(key: String, value: String) {
         sharedPreferences.edit().putString(key, value).apply()
     }

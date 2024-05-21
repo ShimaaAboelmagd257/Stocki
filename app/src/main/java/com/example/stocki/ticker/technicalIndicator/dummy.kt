@@ -67,13 +67,13 @@ fun LineChartExample(stockTicker: String, viewModel:SmaViewModel = hiltViewModel
                     val smaValues = values.map { String.format("%.2f", it.value).toDouble() }
                     //val formattedSmaValues = smaValues.map { "%.2f".format(it) }
                     val lineColors = listOf(Color.Blue, Color.Red)
-                    val actualtime = Constans.timestampToDate(timestamps)
-                    val actualtimeclosing = Constans.timestampToDate(timestampsclosing)
+                //    val actualtime = Constans.timestampToDate(timestamps)
+                  //  val actualtimeclosing = Constans.timestampToDate(timestampsclosing)
 
                     Log.d("stockisma", "closingPrices are $closingPrices")
                     Log.d("stockisma", "smaPrices are $smaValues")
-                    Log.d("stockisma", "timestampsclosing are $actualtimeclosing")
-                    Log.d("stockisma", "timestamps are $actualtime")
+                   // Log.d("stockisma", "timestampsclosing are $actualtimeclosing")
+                   // Log.d("stockisma", "timestamps are $actualtime")
 
 
                     if (isLandscape) {
@@ -89,6 +89,7 @@ fun LineChartExample(stockTicker: String, viewModel:SmaViewModel = hiltViewModel
                 BarStates.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                 }
+                else -> {}
             }
         }
         is SmaState.Error -> {

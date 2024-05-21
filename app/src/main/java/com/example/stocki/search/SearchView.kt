@@ -1,97 +1,90 @@
 package com.example.stocki.search
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import com.example.stocki.data.pojos.Ticker
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.stocki.data.pojos.TickerTypes
 
 @Composable
-fun search(navController: NavHostController,viewmodel: SearchViewmodel = hiltViewModel()){
+fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: () -> Unit ){
 
     val state by viewmodel.state.collectAsState()
 
 
     LaunchedEffect(Unit) {
         viewmodel.fetchData(listOf("stocks","crypto","otc","fx","indices"))
-        /*viewmodel.fetchData("crypto")
-        viewmodel.fetchData("fx")
-       viewmodel.fetchData("otc")
-        viewmodel.fetchData("indices")*/
         Log.d("StockiSearch", "LaunchedEffect ")
 
     }
-
 
     var selectedTab by remember { mutableStateOf("otc") }
     Column(
         modifier = Modifier.fillMaxSize()
 
     ){
-    TopAppBar(
-        backgroundColor = Color.Transparent,
-        elevation = 0.dp
-    ) {
-        TabRow(
-            selectedTabIndex = when (selectedTab) {
-                "stocks" -> 0
-                "crypto" -> 1
-                "fx" -> 2
-                "otc" -> 3
-                "indices" -> 4
-                else -> 0
-            },
-            contentColor = Color.Black
+        TopAppBar(
+            backgroundColor = Color.Transparent,
+            elevation = 0.dp
         ) {
-            // Loop through the list of market types and create a tab for each
-            listOf("Stocks", "Crypto", "FX", "OTC", "Indices").forEachIndexed { index, text ->
-                Tab(
-                    selected = selectedTab == text.toLowerCase(),
-                    onClick = { selectedTab = text.toLowerCase() },
-                    text = { Text(text) }
-                )
+            TabRow(
+                selectedTabIndex = when {
+                 //   isSearching -> -1 // No tab selected when searching
+                    else -> when (selectedTab) {
+                        "stocks" -> 0
+                        "crypto" -> 1
+                        "fx" -> 2
+                        "otc" -> 3
+                        "indices" -> 4
+                        else -> 0
+                    }
+                },
+                contentColor = Color.Black
+            ) {
+                listOf("Stocks", "Crypto", "FX", "OTC", "Indices").forEachIndexed { index, text ->
+                    Tab(
+                        selected = when {
+                            else -> selectedTab == text.toLowerCase()
+                        },
+                        onClick = {
+                                selectedTab = text.toLowerCase()
+                        },
+                        text = { Text(text) }
+                    )
+                }
             }
         }
     }
-   }
 
 
-  //  Spacer(modifier = Modifier.height(56.dp))
     when (val searchState = state) {
         is SearchState.Loading -> {
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
-       /* is SearchState.Data -> {
 
-            val filteredData = searchState.data?.filter { it.market == selectedTab }
-
-            TickerListScreen(tickers = filteredData ?: emptyList())
-            Log.d("StockiSearch", "filteredData ${filteredData?.size} ${selectedTab}")
-
-        }*/
         is SearchState.Data -> {
-            val filteredData = searchState.data?.filter { it.market.equals(selectedTab, ignoreCase = true) }
-
+            val filteredData = searchState.data?.filter {
+                it.market.equals(selectedTab, ignoreCase = true)
+            }
             if (filteredData.isNullOrEmpty()) {
-                // No data available for the selected market type
                 Text("No data available", modifier = Modifier.padding(16.dp))
             } else {
-                TickerListScreen(tickers = filteredData)
+                TickerListScreen(tickers = filteredData , onSearchRequested = onSearchRequested )
             }
-            Log.d("StockiSearch", "filteredData ${filteredData?.size} ${selectedTab}")
 
         }
 
@@ -103,7 +96,7 @@ fun search(navController: NavHostController,viewmodel: SearchViewmodel = hiltVie
                 color = Color.Red,
                 modifier = Modifier.padding(16.dp)
             )
-              Log.d("StockiSearch", "SearchState.Error ${searchState.error}")
+            Log.d("StockiSearch", "SearchState.Error ${searchState.error}")
 
         }
 
@@ -115,35 +108,61 @@ fun search(navController: NavHostController,viewmodel: SearchViewmodel = hiltVie
 }
 
 @Composable
-fun TickerListScreen(tickers: List<TickerTypes>) {
+fun TickerListScreen(tickers: List<TickerTypes> ,  onSearchRequested: () -> Unit) {
     val AppBarHeight = 56.dp
     Log.d("StockiSearch", "filteredData ${tickers.size} ")
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = AppBarHeight)
-    ){
-                items(tickers.size) { index ->
-                    val tickers = tickers[index]
-                    //val tickers = searchState.data[index]
-                    Card(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .clickable {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(150.dp))
 
-                            }
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Text("name: ${tickers.name}")
-                            Text("ticker: ${tickers.ticker}")
-                            Text("locale: ${tickers.locale}")
-                          //  Text("currencyName: ${tickers.currencyName ?: "NOT FOUND"}")
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = AppBarHeight)
+        ){
+            items(tickers.size) { index ->
+                val ticker = tickers[index]
+                Card(
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                        .clickable {
 
                         }
+                ) {
+                    Column(
+                        modifier = Modifier.padding(10.dp)
+                    ) {
+                        Text("name: ${ticker.name}")
+                        Text("ticker: ${ticker.ticker}")
+                        Text("locale: ${ticker.locale}")
                     }
                 }
-            }}
+            }
+        }
+        IconButton(
+            onClick = { onSearchRequested() },
+            modifier = Modifier.background(Color.Black , shape = CircleShape)
+                .align(Alignment.BottomEnd)
+                .padding(70.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = null,
+                tint = Color.Blue,
+                modifier = Modifier.size(100.dp)
+            )
+        }
+
+    }
+}
+@Preview
+@Composable
+fun PreviewTickerListScreen() {
+    val sampleTickersList = listOf(
+        TickerTypes(1, "Market 1", "Name 1", "Ticker 1", "Type 1", "Locale 1"),
+        TickerTypes(2, "Market 2", "Name 2", "Ticker 2", "Type 2", "Locale 2"),
+        TickerTypes(3, "Market 3", "Name 3", "Ticker 3", "Type 3", "Locale 3")
+    )
+    TickerListScreen(tickers = sampleTickersList, onSearchRequested = {})
+}

@@ -2,10 +2,12 @@ package com.example.stocki
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -26,57 +28,157 @@ import androidx.compose.runtime.*
 
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.stocki.data.sharedpreferences.SharedPreferences
+import com.example.stocki.explore.*
+import com.example.stocki.market.stocks.MarketsScreen
+import com.example.stocki.market.bars.BarsViewModel
+import com.example.stocki.market.stocksplits.SplitsView
+import com.example.stocki.search.SearchViewmodel
+import com.example.stocki.search.Searching
 import com.example.stocki.search.search
+import com.example.stocki.splash.SplashScreen
+import com.example.stocki.ticker.technicalIndicator.LineChartExample
+import com.example.stocki.ticker.technicalIndicator.SMAView
+import com.example.stocki.ticker.technicalIndicator.SmaViewModel
 import com.example.stocki.ticker.tickerinfo.TickerInfoViewModel
 import com.example.stocki.ticker.tickerinfo.tickerInfoView
+import com.example.stocki.utility.Constans
 
 @HiltAndroidApp
 class App: Application()
 
+val LocalSharedPreferences = compositionLocalOf<SharedPreferences> { error("No SharedPreferences found!") }
+
+/*
+@Composable
+fun PortraitContent() {
+
+}
 
 @Composable
-fun MyApp() {
-
-
+fun LandscapeContent() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = NavigationRoute.Entrance.route) {
-        // Define your composable destinations here
-        composable(NavigationRoute.Entrance.route) {
-            EntranceScreen(
-                onSignInClick = { navController.navigate(NavigationRoute.SignIn.route) },
-                onSignUpClick = { navController.navigate(NavigationRoute.SignUp.route) },
-            )
-        }
+    NavHost(navController, startDestination = NavigationRoute.TickerSMA.route) {
 
-        composable(NavigationRoute.SignIn.route) {
-            val viewModel: SigninViewModel = hiltViewModel()
-            SignInScreen(
-                signinViewModel = viewModel,
-                navController = navController,
-                
-            )
-        }
-
-        composable(NavigationRoute.SignUp.route) {
-            val viewModel: SignupViewModel = hiltViewModel()
-            SignUpScreen(
-                signUpViewModel = viewModel,
-            )
-        }
-      
-        composable(NavigationRoute.Feeds.route) {
-            FeedsScreen()
-        }
-      
-        composable(NavigationRoute.Main.route){
-            funi()
-        }
     }
     }
+*/
+    @Composable
+    fun MyApp() {
+        val configuration = LocalConfiguration.current
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        ProvideSharedPreferences {
+            val sharedPreferences = LocalSharedPreferences.current
+            val savedSignIn = sharedPreferences.getBoolean(Constans.SAVED_SIGNIN, false)
+            // val snackbarHostState = remember { SnackbarHostState() }
+            val navController = rememberNavController()
+            val context = LocalContext.current
 
+            NavHost(navController, startDestination = NavigationRoute.Splash.route) {
+                composable(NavigationRoute.Splash.route) {
+                    SplashScreen(
+                        onAnimationFinished = {
+
+                            navController.navigate(NavigationRoute.Entrance.route) },
+                        context = context,
+                        navController = navController
+                    )
+                }
+                composable(NavigationRoute.Entrance.route) {
+                    EntranceScreen(
+                        onSignInClick = { navController.navigate(NavigationRoute.SignIn.route) },
+                        onSignUpClick = { navController.navigate(NavigationRoute.SignUp.route) },
+                    )
+                }
+
+                composable(NavigationRoute.SignIn.route) {
+                    val viewModel: SigninViewModel = hiltViewModel()
+                    SignInScreen(
+                        signinViewModel = viewModel,
+                        navController = navController,
+                        //  snackbarHostState = snackbarHostState
+                    )
+                }
+
+                composable(NavigationRoute.SignUp.route) {
+                    val viewModel: SignupViewModel = hiltViewModel()
+                    SignUpScreen(
+                        signUpViewModel = viewModel,
+                    )
+                }
+
+                composable(NavigationRoute.Feeds.route) {
+                    FeedsScreen()
+                }
+                composable(NavigationRoute.Splits.route) {
+                    SplitsView()
+                }
+
+                composable(NavigationRoute.Main.route) {
+                   /* MarketsScreen( onTickerClicked = { ticker ->
+                        navController.navigate("${NavigationRoute.TickerSMA.route}/$ticker")
+                    })*/
+                    funi()
+                }
+                composable(
+                    route = "${NavigationRoute.TickerSMA.route}/{ticker}",
+                    arguments = listOf(navArgument("ticker") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val ticker = backStackEntry.arguments?.getString("ticker")
+                    ticker?.let {
+                        val viewModel: SmaViewModel = hiltViewModel()
+                        val barsViewModel :BarsViewModel = hiltViewModel()
+                        SMAView(ticker) {
+                            viewModel.fetchData(ticker)
+                            barsViewModel.fetchData(ticker,1,"day","2024-04-20","2024-04-30")
+                        }
+
+                    }
+                }
+                composable(
+                    route = "${NavigationRoute.TickerInfo.route}/{ticker}",
+                    arguments = listOf(navArgument("ticker") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val ticker = backStackEntry.arguments?.getString("ticker")
+                    ticker?.let {
+                        val viewModel: TickerInfoViewModel = hiltViewModel()
+                        tickerInfoView(ticker) {
+                            viewModel.fetchData(ticker)
+                        }
+
+                    }
+                }
+                /* composable(route = "${NavigationRoute.TickerSMA.route}/{ticker}",
+                   arguments = listOf(navArgument("ticker") { type = NavType.StringType })){
+                    backStackEntry ->
+                val ticker = backStackEntry.arguments?.getString("ticker")
+                ticker?.let {
+                    val viewModel: SmaViewModel = hiltViewModel()
+                    val barsViewModel :BarsViewModel = hiltViewModel()
+                    SMAView(ticker) {
+                        viewModel.fetchData(ticker*//*,"day"*//*)
+                        barsViewModel.fetchData(ticker,1,"day","2024-03-26","2024-04-09")
+                    }
+
+                }
+
+            }*/
+            }
+        }
+
+    }
 
 
 
@@ -84,41 +186,171 @@ fun MyApp() {
     @SuppressLint("SuspiciousIndentation")
    // @Preview
     @Composable
-    fun funi(){
-    val homeTab = TabBarItem(title = "Home", selectedIcon = Icons.Filled.Home, unselectedIcon = Icons.Outlined.Home)
-    val alertsTab = TabBarItem(title = "Alerts", selectedIcon = Icons.Filled.Home, unselectedIcon = Icons.Outlined.Home)
-    val settingsTab = TabBarItem(title = "Settings", selectedIcon = Icons.Filled.Home, unselectedIcon = Icons.Outlined.Home)
-    val moreTab = TabBarItem(title = "More", selectedIcon = Icons.Filled.Home, unselectedIcon = Icons.Outlined.Home)
+    fun funi() {
 
-    val tabBarItems = listOf(homeTab, alertsTab, settingsTab, moreTab)
+        val newsIcon = painterResource(R.drawable.newsunselected)
+        val newsFilledIcon = painterResource(R.drawable.news)
+        val marketIcon = painterResource(R.drawable.growth)
+        val marketFilledIcon = painterResource(R.drawable.growthfilled)
+        val searchIcon = painterResource(R.drawable.searchdollar)
+        val searchFilledIcon = painterResource(R.drawable.searchfilledd)
+        val bookIconFilled = painterResource(R.drawable.bookselected)
+        val bookIcon = painterResource(R.drawable.bookunslected)
+        val moreIconFilled = painterResource(R.drawable.morefilledicon)
+        val moreIcon = painterResource(R.drawable.moreicon)
+
+        val homeTab = TabBarItem(
+            title = "Market",
+            selectedIcon = marketFilledIcon,
+            unselectedIcon = marketIcon
+        )
+        val feedsTab = TabBarItem(
+            title = "Feeds",
+            selectedIcon = newsFilledIcon,
+            unselectedIcon = newsIcon
+        )
+        val searchTab = TabBarItem(
+            title = "Search",
+            selectedIcon = searchFilledIcon,
+            unselectedIcon = searchIcon
+        )
+        val moreTab = TabBarItem(
+            title = "More",
+            selectedIcon = moreIconFilled,
+            unselectedIcon = moreIcon
+        )
+
+        val explore = TabBarItem(
+            title = "Explore",
+            selectedIcon = bookIconFilled,
+            unselectedIcon = bookIcon
+        )
+
+        val tabBarItems = listOf(homeTab, feedsTab,explore ,searchTab, moreTab)
         val navController = rememberNavController()
 
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            Scaffold(bottomBar = { TabView(tabBarItems, navController) }) {
-                NavHost(
-                    navController = navController,
-                    startDestination  = homeTab.title,
-                )                {
+            Scaffold( bottomBar = { TabView(tabBarItems, navController)}, content = { it ->
+
+               Box( modifier = Modifier.padding(it)){
+                    NavHost(
+                        navController = navController,
+                        startDestination = homeTab.title,
+                    ) {
+                        composable(NavigationRoute.EXplore.route) {
+                        GridWithCards { route, cardId ->
+                            navController.navigate("$route/$cardId")
+                        }
+                    }
+                        composable(homeTab.title) {
+                            MarketsScreen(onTickerClicked = { ticker ->
+                                navController.navigate("${NavigationRoute.TickerInfo.route}/$ticker")
+                            })
+                        }
+                        composable(feedsTab.title) {
+                            FeedsScreen()
+                        }
+                        composable(searchTab.title) {
+                            FeedsScreen()
+                        }
+                        composable(moreTab.title) {
+                            // tickerView()
+                            // HolidaysView()
+                            //  MarketStatusView()
+                            SplitsView()
+
+                        }
+                        composable(NavigationRoute.Searching.route) {
+                            Searching()
+                        }
+                        /*composable(explore.title) {
+                            GridWithCards(onCardClicked = { cardId ->
+
+                                navController.navigate(
+
+                                    "${NavigationRoute.ExploreMarket.route}/$cardId")
+                            })
+                        }*/
+                        composable(
+                            "${NavigationRoute.ExploreMarket.route}/{cardId}",
+                            arguments = listOf(navArgument("cardId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreMarket()
+                        }
+
+                        composable(
+                            "${NavigationRoute.ExploreDividends.route}/{cardId}",
+                            arguments = listOf(navArgument("cardId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreDividends()
+                        }
+                        composable(
+                            "${NavigationRoute.ExploreTypes.route}/{cardId}",
+                            arguments = listOf(navArgument("cardId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreMarketTypes()
+                        }
+
+                        composable(
+                            "${NavigationRoute.ExploreExchange.route}/{cardId}",
+                            arguments = listOf(navArgument("cardId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreMarketExchange()
+                        }
+                        composable(
+                            "${NavigationRoute.ExploreSplits.route}/{cardId}",
+                            arguments = listOf(navArgument("cardId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreSplits(id = cardId)
+                        }
+
+                        composable(
+                            "${NavigationRoute.ExploreTrade.route}/{cardId}",
+                            arguments = listOf(navArgument("cardId") { type = NavType.IntType })
+                        ) { backStackEntry ->
+                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreBuyAndSell(id = cardId)
+                        }
 
 
-                    composable(homeTab.title) {
-                       /* MarketsScreen(navController = navController, onTickerClicked = { ticker ->
-                            navController.navigate("${NavigationRoute.TICKER_INFO.route}/$ticker")
-                        })*/
 
-                    }
-                    composable(alertsTab.title) {
-                       // FeedsScreen()
-                    }
-                    composable(settingsTab.title) {
-                        //tickerView()
-                    }
-                    composable(moreTab.title) {
-                       search(navController)
-                    }
-                    composable(
+
+                        composable(moreTab.title) {
+                            val viewModel: SearchViewmodel = hiltViewModel()
+
+                            search(viewmodel = viewModel,
+                                onSearchRequested = { navController.navigate(NavigationRoute.Searching.route) })
+                        }
+
+                       /* composable(
+                            route = "${NavigationRoute.TickerSMA.route}/{ticker}",
+                            arguments = listOf(navArgument("ticker") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val ticker = backStackEntry.arguments?.getString("ticker")
+                            ticker?.let {
+                                val viewModel: SmaViewModel = hiltViewModel()
+                                val barsViewModel: BarsViewModel = hiltViewModel()
+                                SMAView(ticker) {
+                                    viewModel.fetchData(ticker)
+                                    barsViewModel.fetchData(
+                                        ticker,
+                                        1,
+                                        "day",
+                                        "2024-04-20",
+                                        "2024-04-30"
+                                    )
+                                }
+
+                            }
+                        }*/
+                        composable(
                         route = "${NavigationRoute.TickerInfo.route}/{ticker}",
                         arguments = listOf(navArgument("ticker") { type = NavType.StringType })
                     ) { backStackEntry ->
@@ -131,11 +363,15 @@ fun MyApp() {
 
                         }
                     }
-                }
+                    }
+
+
+
             }
         }
+            )
+        }
     }
-
 @Composable
 fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
     var selectedTabIndex by remember {
@@ -143,7 +379,6 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
     }
 
     NavigationBar {
-        // looping over each tab to generate the views and navigation for each item
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
                 selected = selectedTabIndex == index,
@@ -151,31 +386,38 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
                     selectedTabIndex = index
                     navController.navigate(tabBarItem.title)
                 },
-                icon = {
+                icon ={
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     TabBarIconView(
                         isSelected = selectedTabIndex == index,
                         selectedIcon = tabBarItem.selectedIcon,
                         unselectedIcon = tabBarItem.unselectedIcon,
-                        title = tabBarItem.title,
-
+                        title = tabBarItem.title
                     )
-                },
-                label = {Text(tabBarItem.title)})
+
+                }
+        },modifier = Modifier.size(100.dp),
+                label = {
+                    Text(tabBarItem.title)
+
+                }
+            )
         }
     }
 }
 @Composable
 fun TabBarIconView(
     isSelected: Boolean,
-    selectedIcon: ImageVector,
-    unselectedIcon: ImageVector,
+    selectedIcon: Painter,
+    unselectedIcon: Painter,
     title: String,
     badgeAmount: Int? = null
 ) {
     BadgedBox(badge = { TabBarBadgeView(badgeAmount) }) {
         Icon(
-            imageVector = if (isSelected) {selectedIcon} else {unselectedIcon},
-            contentDescription = title
+            painter = if (isSelected) {selectedIcon} else {unselectedIcon},
+            contentDescription = title,
+            modifier = Modifier.size(30.dp)
         )
     }
 }
@@ -189,9 +431,9 @@ fun TabBarBadgeView(count: Int? = null) {
 }
 
 data class TabBarItem(
-    val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
+    val selectedIcon: Painter,
+    val unselectedIcon: Painter,
+    val title: String
 )
 
 sealed class NavigationRoute(val route: String) {
@@ -200,236 +442,39 @@ sealed class NavigationRoute(val route: String) {
     object Entrance : NavigationRoute("entrance")
    // object Markets : NavigationRoute("markets")
     object Feeds : NavigationRoute("feeds")
+
+
+    object EXplore:NavigationRoute("explore")
+    object ExploreMarket :NavigationRoute("eplore")
+    object ExploreTypes :NavigationRoute("types")
+    object ExploreDividends :NavigationRoute("dividends")
+    object ExploreSplits :NavigationRoute("splits")
+    object ExploreTrade :NavigationRoute("trade")
+    object ExploreExchange :NavigationRoute("exchange")
+
     object Main:NavigationRoute("main")
+    object Splits:NavigationRoute("stockSplits")
+    object Searching:NavigationRoute("searching")
     object TickerInfo: NavigationRoute("tickerInfo")
+    object TickerSMA : NavigationRoute("sma")
+    object Splash : NavigationRoute("splash")
+
 }
 
 
 
-
-
-
-
-
-
-
-
-
-// end of the reusable components that can be copied over to any new projects
-// ----------------------------------------
-
-// This was added to demonstrate that we are infact changing views when we click a new tab
-/*
 @Composable
-fun MoreView() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text("Thing 1")
-        Text("Thing 2")
-        Text("Thing 3")
-        Text("Thing 4")
-        Text("Thing 5")
+fun ProvideSharedPreferences(content: @Composable () -> Unit) {
+    val context = LocalContext.current
+    val sharedPreferences = remember {
+        SharedPreferences(context)
+    }
+    CompositionLocalProvider(LocalSharedPreferences provides sharedPreferences) {
+        content()
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-        MoreView()
-}*/
-/* @Composable
-    fun MyApp(*//*sharedPreference: SharedPreference = hiltViewModel()*//*) {
-        val navController = rememberNavController()
-        Scaffold(
-            bottomBar = {
-                BottomNavigation {
-                    // Home screen
-                    BottomNavigationItem(
-                        selected = navController.currentDestination?.route == NavigationRoute.Main.route,
-                        onClick = {
-                            navController.navigate(NavigationRoute.Main.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                            }
-                        },
-                        icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-                        label = { Text("Home") }
-                    )
 
-                    // News screen
-                    BottomNavigationItem(
-                        selected = navController.currentDestination?.route == NavigationRoute.NEWS.route,
-                        onClick = {
-                            navController.navigate(NavigationRoute.NEWS.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                            }
-                        },
-                        icon = { Icon(Icons.Filled.MailOutline, contentDescription = "News") },
-                        label = { Text("News") }
-                    )
-                }
-            }
-        )
-        {
-        NavHost(navController, startDestination = NavigationRoute.Entrance.route) {
-            composable(NavigationRoute.Entrance.route) {
 
-                EntranceScreen(
-                    onSignInClick = { navController.navigate(NavigationRoute.SignIn.route) },
-                    onSignUpClick = { navController.navigate(NavigationRoute.SignUp.route) },
-                )
-            }
-            composable(NavigationRoute.SignIn.route) {
-                val viewModel: SigninViewModel = hiltViewModel()
-                SignInScreen(signinViewModel = viewModel, navController = navController)
-            }
-            composable(NavigationRoute.SignUp.route) {
-                val viewModel: SignupViewModel = hiltViewModel()
-                SignUpScreen(signUpViewModel = viewModel)
-            }
-            composable(NavigationRoute.Main.route) {
-                MainScreen() // Call your MainScreen composable here
-            }
-            composable(NavigationRoute.NEWS.route) {
-                FeedsScreen()
-            }
-        }
-    }
-    }*/
-/* @Composable
- fun MyApp(*//*sharedPreference: SharedPreference = hiltViewModel()*//*) {
-       val navController = rememberNavController()
 
-       NavHost(navController, startDestination = NavigationRoute.Entrance.route) {
-           composable(NavigationRoute.Entrance.route) {
-               EntranceScreen(
-                   onSignInClick = { navController.navigate(NavigationRoute.SignIn.route) },
-                   onSignUpClick = { navController.navigate(NavigationRoute.SignUp.route) },
-               )
-           }
-           composable(NavigationRoute.SignIn.route) {
-               val viewModel: SigninViewModel = hiltViewModel()
-               SignInScreen(
-                   signinViewModel = viewModel,
-                   navController = navController,
-                  // onSignInSuccess = { navController.navigate(NavigationRoute.Main.route) }
-               )
-           }
-           composable(NavigationRoute.SignUp.route) {
-               val viewModel: SignupViewModel = hiltViewModel()
-               SignUpScreen(
-                   signUpViewModel = viewModel,
-                  // onSignUpSuccess = { navController.navigate(NavigationRoute.Main.route) }
-               )
-           }
-           composable(NavigationRoute.Markets.route) {
-               MarketsScreen() // Call your MainScreen composable here
-           }
-           composable(NavigationRoute.Feeds.route) {
-               FeedsScreen()
-           }
 
-           composable(NavigationRoute.Main.route) {
-               Scaffold(
-                   bottomBar = {
-                       BottomNavigation {
-                           // Home screen
-                           BottomNavigationItem(
-                               selected = navController.currentDestination?.route == NavigationRoute.Feeds.route,
-                               onClick = {
-                                   navController.navigate(NavigationRoute.Feeds.route) {
-                                       popUpTo(navController.graph.findStartDestination().id) {
-                                           saveState = true
-                                       }
-                                       launchSingleTop = true
-                                   }
-                               },
-                               icon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-                               label = { Text("Home") }
-                           )
-
-                           BottomNavigationItem(
-                               selected = navController.currentDestination?.route == NavigationRoute.Markets.route,
-                               onClick = {
-                                   // No need to navigate to Main screen if already on Main screen
-                                   if (navController.currentDestination?.route != NavigationRoute.Markets.route) {
-                                       navController.navigate(NavigationRoute.Markets.route) {
-                                           popUpTo(navController.graph.findStartDestination().id) {
-                                               saveState = true
-                                           }
-                                           launchSingleTop = true
-                                       }
-                                   }
-                               },
-                               icon = {  StockMarketIcon(
-                                   modifier = Modifier.size(24.dp),
-                                   color = if (navController.currentDestination?.route == NavigationRoute.Markets.route) {
-                                       Color.Red // Change the color based on selection
-                                   } else {
-                                       Color.Gray // Change the color based on deselection
-                                   }
-                               ) },
-                               label = { Text("Markets") }
-                           )
-                       }
-                   }
-               )
-
-               {  MarketsScreen() // Call your MainScreen composable here
-                   FeedsScreen()
-               }
-           }
-       }
-   }*/
-/*
-// Define a function to navigate to the Feeds screen
-   val navigateToFeeds: () -> Unit = {
-       navController.navigate(NavigationRoute.Feeds.route) {
-           popUpTo(navController.graph.findStartDestination().id) {
-               saveState = true
-           }
-           launchSingleTop = true
-       }
-   }
-
-// Define a function to navigate to the Markets screen
-val navigateToMarkets: () -> Unit = {
-    if (navController.currentDestination?.route != NavigationRoute.Markets.route) {
-        navController.navigate(NavigationRoute.Markets.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-        }
-    }
-}
-*/
-
-// Scaffold with BottomNavigation only for Markets and Feeds screens
-
-// Call NavHost inside the Scaffold
-/*composable(NavigationRoute.SignIn.route) {
-         val viewModel: SigninViewModel = hiltViewModel()
-         SignInScreen(
-             signinViewModel = viewModel,
-             navController = navController,
-             // onSignInSuccess = { navController.navigate(NavigationRoute.Main.route) }
-         )
-     }*/
-/*
-@Composable
-fun TabBarItem(
-    title: String,
-    selectedIcon: ImageVector,
-    unselectedIcon: ImageVector,
-    badgeAmount: Int? = null
-): TabBarItem {
-    return TabBarItem(title, selectedIcon, unselectedIcon)
-}
-*/

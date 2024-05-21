@@ -33,4 +33,16 @@ class TickerInfoViewModel @Inject constructor(val tickerInfoUseCase: TickerInfoU
             }
         }
     }
+    /*fun fetchTickerLogo() {
+        viewModelScope.launch {
+
+            _state.value = TickerInfoState.Loading
+            try {
+                val result = tickerInfoUseCase.getAllTickerLogo()
+                _state.value = result
+            } catch (e: Exception) {
+                _state.value = TickerInfoState.Error(e.message ?: "An error occurred")
+            }
+        }
+    }*/
 }

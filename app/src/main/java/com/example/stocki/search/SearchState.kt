@@ -1,6 +1,5 @@
 package com.example.stocki.search
 
-import com.example.stocki.data.pojos.Ticker
 import com.example.stocki.data.pojos.TickerTypes
 
 sealed class SearchState {

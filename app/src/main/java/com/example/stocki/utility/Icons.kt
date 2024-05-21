@@ -9,8 +9,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Canvas
+import androidx.compose.material.Icon
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.stocki.R
 
 @Preview
 @Composable
@@ -74,4 +78,11 @@ fun StockMarketIcon(
             )
         }
     }
+    Icon(
+        painter = painterResource(R.drawable.news),
+        contentDescription = null
+    )
+}
+object Icons{
+
 }

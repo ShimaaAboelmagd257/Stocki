@@ -12,8 +12,8 @@ data class StockSplitResponse(
 
 @Parcelize
 data class StockSplit(
-     val executionDate: String,
-    val splitFrom: Int,
-    val splitTo: Int,
+     val execution_date: String,
+    val split_from: Int,
+    val split_to: Float,
    val ticker: String
 ) : Parcelable
