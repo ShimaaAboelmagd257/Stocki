@@ -55,6 +55,7 @@ import com.example.stocki.ticker.technicalIndicator.SmaViewModel
 import com.example.stocki.ticker.tickerinfo.TickerInfoViewModel
 import com.example.stocki.ticker.tickerinfo.tickerInfoView
 import com.example.stocki.utility.Constans
+import com.example.stocki.watchlists.WatchListView
 
 @HiltAndroidApp
 class App: Application()
@@ -104,19 +105,14 @@ fun LandscapeContent() {
                 }
 
                 composable(NavigationRoute.SignIn.route) {
-                    val viewModel: SigninViewModel = hiltViewModel()
                     SignInScreen(
-                        signinViewModel = viewModel,
-                        navController = navController,
+                        navController = navController
                         //  snackbarHostState = snackbarHostState
                     )
                 }
 
                 composable(NavigationRoute.SignUp.route) {
-                    val viewModel: SignupViewModel = hiltViewModel()
-                    SignUpScreen(
-                        signUpViewModel = viewModel,
-                    )
+                    SignUpScreen()
                 }
 
                 composable(NavigationRoute.Feeds.route) {
@@ -253,7 +249,9 @@ fun LandscapeContent() {
                             FeedsScreen()
                         }
                         composable(searchTab.title) {
-                            FeedsScreen()
+                          //  FeedsScreen()
+                            WatchListView(onInsertClicked = { navController.navigate(NavigationRoute.Searching.route)
+                            })
                         }
                         composable(moreTab.title) {
                             // tickerView()
@@ -285,14 +283,14 @@ fun LandscapeContent() {
                             "${NavigationRoute.ExploreDividends.route}/{cardId}",
                             arguments = listOf(navArgument("cardId") { type = NavType.IntType })
                         ) { backStackEntry ->
-                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                           // val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
                             ExploreDividends()
                         }
                         composable(
                             "${NavigationRoute.ExploreTypes.route}/{cardId}",
                             arguments = listOf(navArgument("cardId") { type = NavType.IntType })
                         ) { backStackEntry ->
-                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                           // val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
                             ExploreMarketTypes()
                         }
 
@@ -300,23 +298,23 @@ fun LandscapeContent() {
                             "${NavigationRoute.ExploreExchange.route}/{cardId}",
                             arguments = listOf(navArgument("cardId") { type = NavType.IntType })
                         ) { backStackEntry ->
-                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                           // val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
                             ExploreMarketExchange()
                         }
                         composable(
                             "${NavigationRoute.ExploreSplits.route}/{cardId}",
                             arguments = listOf(navArgument("cardId") { type = NavType.IntType })
                         ) { backStackEntry ->
-                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
-                            ExploreSplits(id = cardId)
+                           // val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreSplits()
                         }
 
                         composable(
                             "${NavigationRoute.ExploreTrade.route}/{cardId}",
                             arguments = listOf(navArgument("cardId") { type = NavType.IntType })
                         ) { backStackEntry ->
-                            val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
-                            ExploreBuyAndSell(id = cardId)
+                           // val cardId = backStackEntry.arguments?.getInt("cardId") ?: 0
+                            ExploreBuyAndSell()
                         }
 
 

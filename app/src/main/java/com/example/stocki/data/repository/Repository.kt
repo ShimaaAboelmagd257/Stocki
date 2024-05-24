@@ -48,6 +48,15 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
             localSource.insertTickerLogo(brandingSaved)
         }
 
+    } fun getAllWatchLists(): List<TickerTypes>{
+        return localSource.getAllWatchLists()
+    }
+    suspend fun insertTicker(tickerTypes: List<TickerTypes>){
+        localSource.insertTicker(tickerTypes)
+    }
+
+    fun deleteTicker(ticker : TickerTypes){
+        localSource.deleteTicker(ticker)
     }
     fun getAllTickerTypes(): List<TickerTypes>{
         return localSource.getgetAllTickerTypes()

@@ -1,6 +1,8 @@
 package com.example.stocki.account.signup
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -12,16 +14,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.setValue
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.stocki.R
 
 
-    @Composable
-    fun SignUpScreen(signUpViewModel: SignupViewModel) {
+@Composable
+    fun SignUpScreen(signUpViewModel: SignupViewModel = hiltViewModel()) {
         var name by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var confirmPassword by remember { mutableStateOf("") }
         val viewState by signUpViewModel.viewState.observeAsState()
+        Image(
+            painter = painterResource(id = R.drawable.greensecondrayback),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -53,8 +68,14 @@ import androidx.compose.ui.platform.LocalContext
             TextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text(
+                    "Confirm Password" ,
+                color = Color.White) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.Black),
+                textStyle = TextStyle(color = Color.White)
+
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {

@@ -10,12 +10,12 @@ import com.example.stocki.data.pojos.BrandingSaved
 import com.example.stocki.data.pojos.Company
 import com.example.stocki.data.pojos.TickerTypes
 
-@Database(entities = [TickerTypes::class , BrandingSaved::class ], version = 11)
+@Database(entities = [TickerTypes::class , BrandingSaved::class ], version = 12)
 abstract class StockiDatabase : RoomDatabase() {
 
     abstract fun TickerDAO() : TickerDAO
     abstract fun TickerLogoDAO() :TickerLogoDAO
-    //abstract fun TickerInfoDAO() : TickerInfoDAO
+    abstract fun WatchListDao() : WatchListDao
     companion object {
         @Volatile
         private var INSTANCE: StockiDatabase? = null

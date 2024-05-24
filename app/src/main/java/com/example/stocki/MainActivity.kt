@@ -1,5 +1,7 @@
 package com.example.stocki
 
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -20,16 +22,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var stockiClient: StockiClient
     override fun onCreate(savedInstanceState: Bundle?) {
-        //signupFactory = SignupFactory(UserRepository.getInstance(applicationContext))
+     //   requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
-        setContent {
-              MyApp()
+        val configuration = resources.configuration
+        val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+        setContent{
+            MyApp()
         }
+
         stockiClient = StockiClient.getInstance()
 
         lifecycleScope.launch {

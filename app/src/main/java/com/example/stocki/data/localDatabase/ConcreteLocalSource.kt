@@ -9,6 +9,9 @@ import javax.inject.Inject
 class ConcreteLocalSource @Inject constructor(context: Context):localSource {
 
     private val stockiDatabase:StockiDatabase = StockiDatabase.getInstance(context)
+    private val watchListDao:WatchListDao by lazy {
+        stockiDatabase.WatchListDao()
+    }
     private val tickerDAO:TickerDAO by lazy { stockiDatabase.TickerDAO() }
     private val tickerLogoDAO: TickerLogoDAO by lazy {
         stockiDatabase.TickerLogoDAO()
@@ -38,12 +41,24 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
         tickerDAO.insertTypes(tickerTypes)
     }
 
-   /* override fun getAllTickerInfo(): List<Company> {
-      return  tickerInfoDAO.getAllTickerInfo()
+    override fun getAllWatchLists(): List<TickerTypes> {
+        return watchListDao.getAllWatchLists()
     }
 
-    override suspend fun insertTickerInfo(company: List<Company>) {
-      tickerInfoDAO.insertTickerInfo(company)    }*/
+    override suspend fun insertTicker(types: List<TickerTypes>) {
+         watchListDao.insertTicker(types)
+    }
+
+    override fun deleteTicker(ticker: TickerTypes) {
+        watchListDao.deleteTicker(ticker)
+    }
+
+    /* override fun getAllTickerInfo(): List<Company> {
+       return  tickerInfoDAO.getAllTickerInfo()
+     }
+
+     override suspend fun insertTickerInfo(company: List<Company>) {
+       tickerInfoDAO.insertTickerInfo(company)    }*/
     override fun getAllTickerLogo(): List<BrandingSaved> {
        return tickerLogoDAO.getAllTickerLogo()
     }

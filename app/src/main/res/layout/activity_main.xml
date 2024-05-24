@@ -32,4 +32,8 @@
         app:srcCompat="@android:drawable/ic_dialog_email"
         tools:ignore="SpeakableTextPresentCheck" />
 
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="197dp" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

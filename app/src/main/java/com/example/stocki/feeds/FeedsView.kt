@@ -1,5 +1,6 @@
 package com.example.stocki.feeds
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -30,11 +31,14 @@ import coil.compose.rememberImagePainter
 import java.util.Collections.emptyList
 import coil.transform.CircleCropTransformation
 import com.example.stocki.utility.Constans.DEFAULT_IMAGE_URL
+import com.example.stocki.utility.Constans.ReadMoreText
+import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.RectangleShape
+import com.example.stocki.utility.Constans
 
 
 @Composable
 fun FeedsScreen(viewModel: FeedsViewModel = hiltViewModel()) {
-
 
     val state by viewModel.state.collectAsState()
 
@@ -69,8 +73,11 @@ fun FeedsScreen(viewModel: FeedsViewModel = hiltViewModel()) {
         Text("Fetch Data")
     }*/
 }
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun NewsItemCard(newsItem: NewsItem) {
+    var expandedText by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -87,12 +94,26 @@ fun NewsItemCard(newsItem: NewsItem) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
+            // Image
+            val imageUrl = newsItem.image_url ?: DEFAULT_IMAGE_URL
+            Constans.LoadNetworkImage(
+                url = imageUrl,
+                modifier = Modifier
+                    .height(200.dp)
+                    .fillMaxWidth()
+                    .clip(shape = RectangleShape)
+            )
             // Description
-            Text(
+            ReadMoreText(
+                text = newsItem.description,
+                maxLines = if (expandedText) Int.MAX_VALUE else 2,
+                onReadMoreClicked = { expandedText = true }
+            )
+           /* Text(
                 text = newsItem.description,
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(bottom = 8.dp)
-            )
+            )*/
             // Author and Publisher
             Text(
                 text = "By ${newsItem.author} - ${newsItem.publisher.name}",
@@ -101,19 +122,11 @@ fun NewsItemCard(newsItem: NewsItem) {
             )
             // Published Date
             Text(
-                text = "Published on ${newsItem.publishedUtc}",
+                text = "Published on ${newsItem.published_utc}",
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            // Image
-              val imageUrl = newsItem.imageUrl ?: DEFAULT_IMAGE_URL
-                LoadNetworkImage(
-                    url = imageUrl,
-                    modifier = Modifier
-                        .height(200.dp)
-                        .fillMaxWidth()
-                        .clip(shape = RoundedCornerShape(8.dp))
-                )
+
 
             // Keywords
             Text(
@@ -127,40 +140,25 @@ fun NewsItemCard(newsItem: NewsItem) {
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            // AMP URL
+            /*// AMP URL
             Text(
-                text = "AMP URL: ${newsItem.ampUrl}",
+                text = "AMP URL: ${newsItem.amp_url}",
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(bottom = 8.dp)
-            )
+            )*/
             // Article URL
             Text(
-                text = "Article URL: ${newsItem.articleUrl}",
+                text = "Article URL: ${newsItem.article_url}",
                 style = MaterialTheme.typography.body2,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-            // Publisher details
+            /*// Publisher details
             Text(
-                text = "Publisher: ${newsItem.publisher.name}, Homepage: ${newsItem.publisher.homepageUrl}",
+                text = "Publisher: ${newsItem.publisher.name}, Homepage: ${newsItem.publisher.homepage_url}",
                 style = MaterialTheme.typography.body2
-            )
+            )*/
         }
     }
-}
-@Composable
-fun LoadNetworkImage(url: String, modifier: Modifier = Modifier) {
-    val painter = rememberImagePainter(
-        data = url,
-        builder = {
-            transformations(CircleCropTransformation()) // Apply transformations if needed
-        }
-    )
-
-    Image(
-        painter = painter,
-        contentDescription = null, // Content description is optional
-        modifier = modifier
-    )
 }
 /*@Composable
 fun NewsItemCard(newsItem: NewsItem) {

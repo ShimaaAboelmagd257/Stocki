@@ -10,6 +10,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewmodel @Inject constructor(val searchUsecase: SearchUsecase )  : ViewModel() {
+
     private val _state = MutableStateFlow<SearchState>(SearchState.Loading)
     val state: StateFlow<SearchState> = _state
     fun fetchData(markets: List<String>) {

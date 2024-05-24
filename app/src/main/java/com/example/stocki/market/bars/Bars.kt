@@ -21,6 +21,7 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+/*
 
 @Composable
 fun AggregateBarChart(viewModel: BarsViewModel = hiltViewModel()) {
@@ -28,7 +29,7 @@ fun AggregateBarChart(viewModel: BarsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchData("AAPL",1,"hour","2024-03-01","2024-03-01") // Fetch data automatically when the screen is displayed
+       // viewModel.fetchData("AAPL",1,"day","2024-03-31","2024-04-09") // Fetch data automatically when the screen is displayed
     }
 
     Column(
@@ -38,7 +39,6 @@ fun AggregateBarChart(viewModel: BarsViewModel = hiltViewModel()) {
     ) {
         when (val barState = state) {
             is BarStates.Loading -> {
-                // Show loading indicator
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
 
@@ -59,6 +59,7 @@ fun AggregateBarChart(viewModel: BarsViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(16.dp)
                 )
             }
+            else -> {}
         }
     }
 }
@@ -102,3 +103,4 @@ fun HorizontalBarChart(data: List<BarEntry>) {
     )
 }
 
+*/

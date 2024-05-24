@@ -49,34 +49,6 @@ data class AggregateData(
     val v: Double,    // Volume
     val vw: Double  //Volume Weighted Average Price
 ): Parcelable
-/*T*string
 
-The exchange symbol that this item is traded under.
-c*number
 
-The close price for the symbol in the given time period.
-h*number
 
-The highest price for the symbol in the given time period.
-l*number
-
-The lowest price for the symbol in the given time period.
-ninteger
-
-The number of transactions in the aggregate window.
-o*number
-
-The open price for the symbol in the given time period.
-otcboolean
-
-Whether or not this aggregate is for an OTC ticker. This field will be left off if false.
-t*integer
-
-The Unix Msec timestamp for the end of the aggregate window.
-v*number
-
-The trading volume of the symbol in the given time period.
-vwnumber
-
-The volume weighted average price.
-*/

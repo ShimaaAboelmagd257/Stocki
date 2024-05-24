@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.stocki.LocalSharedPreferences
@@ -28,8 +29,8 @@ import kotlinx.coroutines.launch
 
 @Composable
     fun SignInScreen(
-        signinViewModel: SigninViewModel,
-        navController: NavController,
+    signinViewModel: SigninViewModel = hiltViewModel(),
+    navController: NavController,
     ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

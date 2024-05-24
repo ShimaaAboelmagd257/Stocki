@@ -16,14 +16,14 @@ data class NewsResponse(
 
 @Parcelize
 data class NewsItem(
-    val ampUrl: String,
-    val articleUrl: String,
+    val amp_url: String,
+    val article_url: String,
     val author: String,
     val description: String,
     val id: String,
-    val imageUrl: String,
+    val image_url: String,
     val keywords: List<String>,
-    val publishedUtc: String,
+    val published_utc: String,
     val publisher: Publisher,
     val tickers: List<String>,
     val title: String
@@ -31,8 +31,8 @@ data class NewsItem(
 
 @Parcelize
 data class Publisher(
-     val faviconUrl: String,
-     val homepageUrl: String,
-     val logoUrl: String,
+     val favicon_url: String,
+     val homepage_url: String,
+     val logo_url: String,
     val name: String
 ) : Parcelable

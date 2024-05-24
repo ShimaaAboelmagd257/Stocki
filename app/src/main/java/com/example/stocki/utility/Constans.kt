@@ -1,5 +1,6 @@
 package com.example.stocki.utility
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -13,6 +14,8 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import androidx.compose.runtime.*
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
 
 object Constans {
     val Api_Key = "mAaVmZBxHnrQrIqmCBEuRgklMFIC4_yH"
@@ -70,9 +73,25 @@ object Constans {
         return password.length >= 6
     }
     @Composable
+    fun LoadNetworkImage(url: String, modifier: Modifier = Modifier) {
+        val painter = rememberImagePainter(
+            data = url,
+            builder = {
+                transformations(CircleCropTransformation()) // Apply transformations if needed
+            }
+        )
+
+        Image(
+            painter = painter,
+            contentDescription = null, // Content description is optional
+            modifier = modifier
+        )
+    }
+
+    @Composable
     fun ReadMoreText(
         text: String,
-        maxLines: Int = 2,
+        maxLines: Int = 4,
         onReadMoreClicked: () -> Unit
     ) {
         var expanded by remember { mutableStateOf(false) }
