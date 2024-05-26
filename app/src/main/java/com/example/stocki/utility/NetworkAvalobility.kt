@@ -8,6 +8,7 @@ import android.net.NetworkRequest
 import android.os.Handler
 import android.os.Looper
 
+/*
 class NetworkStateManager(private val context: Context) : ConnectivityManager.NetworkCallback() {
     private val networkStateListeners: MutableList<NetworkStateListener> = ArrayList()
     private val handler: Handler = Handler(Looper.getMainLooper())
@@ -57,8 +58,55 @@ class NetworkStateManager(private val context: Context) : ConnectivityManager.Ne
         networkStateListeners.remove(listener)
     }
 }
-
+*/
 interface NetworkStateListener {
-    fun onNetworkAvailable()
-    fun onNetworkUnavailable()
+    fun onNetworkStateChanged(networkState: NetworkState)
+}
+sealed class NetworkState {
+    object Available : NetworkState()
+    object Unavailable : NetworkState()
+}
+object NetworkStateManager : ConnectivityManager.NetworkCallback() {
+    private val networkStateListeners: MutableList<NetworkStateListener> = ArrayList()
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    private lateinit var connectivityManager: ConnectivityManager
+
+    fun initialize(context: Context) {
+        connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkRequest = NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .build()
+        connectivityManager.registerNetworkCallback(networkRequest, this)
+    }
+
+    override fun onAvailable(network: Network) {
+        handler.post {
+            notifyNetworkStateChanged(NetworkState.Available)
+        }
+    }
+
+    override fun onLost(network: Network) {
+        if (!isConnected()) {
+            handler.post {
+                notifyNetworkStateChanged(NetworkState.Unavailable)
+            }
+        }
+    }
+
+    private fun notifyNetworkStateChanged(networkState: NetworkState) {
+        networkStateListeners.forEach { it.onNetworkStateChanged(networkState) }
+    }
+
+    fun isConnected(): Boolean {
+        return connectivityManager.activeNetwork != null
+    }
+
+    fun addNetworkStateListener(listener: NetworkStateListener) {
+        networkStateListeners.add(listener)
+    }
+
+    fun removeNetworkStateListener(listener: NetworkStateListener) {
+        networkStateListeners.remove(listener)
+    }
 }

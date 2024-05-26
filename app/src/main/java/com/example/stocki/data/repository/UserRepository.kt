@@ -56,9 +56,8 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
 
         return firebaseManager.checkUserExists(email)
     }
-     suspend fun getGoogleSignInIntent(): Intent {
+      fun getGoogleSignInIntent(): Intent {
          Log.d("StockiURepo", "getGoogleSignInIntent " )
-
          return firebaseManager.getGoogleSignInIntent()
     }
 
