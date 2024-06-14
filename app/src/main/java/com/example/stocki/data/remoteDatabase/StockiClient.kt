@@ -104,7 +104,7 @@ class StockiClient @Inject  constructor(): RemoteSource {
     }
 
     override suspend fun getTickerNews(): NewsResponse {
-        return stockiService.getTickerNews(apiKey)
+        return stockiService.getTickerNews(apiKey = apiKey)
     }
 
     override suspend fun getTickerTypes(

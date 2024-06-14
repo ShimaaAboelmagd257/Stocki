@@ -4,9 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.stocki.data.pojos.BrandingSaved
-import com.example.stocki.data.pojos.Company
-import com.example.stocki.data.pojos.TickerTypes
+import com.example.stocki.data.pojos.*
 
 
 @Dao
@@ -18,6 +16,19 @@ interface TickerDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTypes(types: List<TickerTypes>)
 }
+@Dao
+interface newsLocalDAO {
+
+    @Query("SELECT * FROM newsLocal")
+    fun getAllNewsLocal(): List<NewsItem>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNewsLocal(types: List<NewsItem>)
+
+    @Query("SELECT * FROM newsLocal WHERE id = :id")
+    fun getNewsItemById(id:String) : NewsItem
+}
+
 
 /*
 @Dao

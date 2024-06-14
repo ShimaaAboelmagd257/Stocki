@@ -1,12 +1,6 @@
 package com.example.stocki.data.localDatabase
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.example.stocki.data.pojos.BrandingSaved
-import com.example.stocki.data.pojos.Company
-import com.example.stocki.data.pojos.TickerTypes
+import com.example.stocki.data.pojos.*
 
 interface localSource {
 
@@ -28,4 +22,7 @@ interface localSource {
     suspend fun insertTickerLogo(brandingSaved: List<BrandingSaved>)
     fun getTickerLogo(ticker:String): BrandingSaved
 
+    suspend fun insertNews(newsLocal: List<NewsItem>)
+    fun getNews(): List<NewsItem>
+    fun getNewsItemById(id:String):NewsItem
 }

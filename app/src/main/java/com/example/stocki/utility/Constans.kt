@@ -1,8 +1,12 @@
 package com.example.stocki.utility
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,7 +18,18 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 
 object Constans {
@@ -36,7 +51,8 @@ object Constans {
     val statusUrl = ""
     val buy_sellUrl = "lAcwiWEiGQg"
      val stockExchangeUrl = "F3QpgXBtDeo"
-
+    const val CACHE_EXPIRY_TIME = 60 * 60 * 1000 // 1 hour in milliseconds
+     val  currentTime = System.currentTimeMillis()
     const val DEFAULT_IMAGE_URL = "R.drawable.ic_launcher_background"
     const val MARKETS_SCREEN = "markets_screen"
     const val TICKER_INFO_SCREEN = "ticker_info_screen"
@@ -73,19 +89,76 @@ object Constans {
         return password.length >= 6
     }
     @Composable
-    fun LoadNetworkImage(url: String, modifier: Modifier = Modifier) {
-        val painter = rememberImagePainter(
-            data = url,
-            builder = {
-                transformations(CircleCropTransformation()) // Apply transformations if needed
-            }
+    fun LoadNetworkSvgImage(url: String, modifier: Modifier = Modifier) {
+        val painter: Painter = rememberAsyncImagePainter(
+            model = ImageRequest
+                .Builder(context = LocalContext.current)
+                .data(url)
+                .decoderFactory(SvgDecoder.Factory())
+                .build()
         )
-
-        Image(
-            painter = painter,
-            contentDescription = null, // Content description is optional
+        Box(
             modifier = modifier
         )
+        {
+            Image(
+                painter = painter,
+                contentDescription = null, // Content description is optional
+                modifier = modifier,
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
+
+    @Composable
+    fun LoadNetworkImage(url: String, modifier: Modifier = Modifier) {
+           val painter: Painter = rememberImagePainter(data = url)
+           Box(
+               modifier = modifier
+           )
+           {
+               Image(
+                   painter = painter,
+                   contentDescription = null, // Content description is optional
+                   modifier = modifier,
+                   contentScale = ContentScale.Fit
+               )
+           }
+    }
+    @Composable
+    fun ClickableUrl(
+        url : String,
+        modifier: Modifier =Modifier
+    ){
+        val context = LocalContext.current
+
+        val annotation = buildAnnotatedString {
+            withStyle(style = SpanStyle(color = Color.Blue , fontSize = 16.sp)){
+                append(url)
+            }
+            addStringAnnotation(
+                tag = "URL" ,
+                annotation = url,
+                start = 0,
+                end = url.length
+            )
+        }
+
+        ClickableText(text = annotation, onClick = { offset ->
+            annotation.getStringAnnotations(tag = "URL" , start = offset , end = offset).firstOrNull()?.let {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.item))
+                context.startActivity(intent)
+            }
+
+
+
+        }, modifier = modifier
+
+
+
+        )
+
+
     }
 
     @Composable
@@ -109,10 +182,12 @@ object Constans {
             Text(
                 text = "Read More",
                 color = MaterialTheme.colors.primary,
-                modifier = Modifier.padding(top = 4.dp).clickable {
-                    onReadMoreClicked()
-                    expanded = true
-                }
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .clickable {
+                        onReadMoreClicked()
+                        expanded = true
+                    }
             )
         }
     }

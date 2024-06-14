@@ -1,6 +1,8 @@
 package com.example.stocki.data.pojos
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 
@@ -37,8 +39,10 @@ data class DailyOpenCloseResponse(
     val volume: Long
 ): Parcelable
 
+@Entity(tableName = "AggregateData")
 @Parcelize
 data class AggregateData(
+    @PrimaryKey(autoGenerate = true)
     val T: String, //ticker name
     val c: Double, // Closing price
     val h: Double, // High price
@@ -49,6 +53,7 @@ data class AggregateData(
     val v: Double,    // Volume
     val vw: Double  //Volume Weighted Average Price
 ): Parcelable
+
 
 
 

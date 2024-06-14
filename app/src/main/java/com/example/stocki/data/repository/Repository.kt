@@ -12,7 +12,11 @@ import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
 import com.example.stocki.data.pojos.refrenceData.FinancialsResponse
 import com.example.stocki.data.remoteDatabase.RemoteSource
+import com.example.stocki.utility.Constans.currentTime
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -140,6 +144,43 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         Log.d("StockiRepo", "getTickerNews  " )
 
         return remoteSource.getTickerNews()
+    }
+
+   suspend fun getAllNews():List<NewsItem>{
+       return localSource.getNews()
+   }
+    suspend fun fetchAndStoreTickerNews(): List<NewsItem> = withContext(Dispatchers.IO) {
+        val response = remoteSource.getTickerNews().results
+        val localNews = response.map {
+            NewsItem(
+                amp_url = it.amp_url ?: "",
+                article_url = it.article_url,
+                author = it.author,
+                description = it.description ?: "Descibtion Not Found",
+                id = it.id,
+                image_url = it.image_url,
+                published_utc = it.published_utc,
+                tickers = it.tickers.first(),
+                title = it.title,
+                fetched_at = currentTime
+            )
+        }
+        localSource.insertNews(localNews)
+        return@withContext localNews
+    }
+    fun getNewsItemById(id: String): Flow<NewsItem?> {
+        return flow {
+            val newsItem = localSource.getNewsItemById(id)
+            emit(newsItem)
+        }.flowOn(Dispatchers.IO)
+    }
+
+   /* fun getNewsItemById(id:String):NewsItem{
+        return localSource.getNewsItemById(id)
+    }*/
+
+     fun getAllnewsTitles() : List<NewsItem>{
+       return localSource.getNews()
     }
 
     suspend fun getTickerTypes(

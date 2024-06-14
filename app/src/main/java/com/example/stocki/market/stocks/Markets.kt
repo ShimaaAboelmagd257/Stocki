@@ -2,11 +2,9 @@ package com.example.stocki.market.stocks
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -57,7 +55,7 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel(), onTickerClicked:
 
 
                     Card(
-                        modifier = Modifier
+                        modifier = Modifier.border(5.dp, Color.Black)
                             .padding(10.dp)
                             .fillMaxWidth()
                             .clickable {
@@ -66,7 +64,7 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel(), onTickerClicked:
                             }
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp)
+                            //mor.paddidifier = Modifieng(16.dp)
                         ) {
                             logoUrl?.let { url ->
                                 Image(
@@ -76,18 +74,18 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel(), onTickerClicked:
                                 )
                             }
                             Text(" ${aggregateData.T}", fontWeight = FontWeight.Bold)
-                            Text("Opening Price: " + aggregateData.o, color = Color.Green) // Color coding
-                            Text("Closing Price: ${aggregateData.c}", color = Color.Green)
-                            Text("High Price: ${aggregateData.h}", color = Color.Green)
+                            Text("Opening Price: " + aggregateData.o)
+                            Text("Closing Price: ${aggregateData.c}")
+                            Text("High Price: ${aggregateData.h}")
                             Text("Low Price: ${aggregateData.l}", color = Color.Red)
-                            Text("Volume: ${aggregateData.v}")
-                           /* LinearProgressIndicator(
+                          /*  Text("Volume: ${aggregateData.v}")
+                           *//* LinearProgressIndicator(
                                 modifier = Modifier.fillMaxWidth(),
                                 progress = aggregateData.v / maxVolume // Assuming maxVolume is the maximum possible volume
-                            )*/
+                            )*//*
                             Text("Volume Weighted Average Price: ${aggregateData.vw}")
                             Text("Timestamp: ${aggregateData.t}")
-                            Text("Number of items in the bar: ${aggregateData.n}")
+                            Text("Number of items in the bar: ${aggregateData.n}")*/
                         }
                     }
                 }

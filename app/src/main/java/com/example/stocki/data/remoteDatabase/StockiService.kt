@@ -76,6 +76,7 @@ interface StockiService {
 
     @GET("/v2/reference/news")
     suspend fun getTickerNews(
+        @Query("limit") limit: Int = 20,
         @Query("apiKey") apiKey: String
     ):NewsResponse
 

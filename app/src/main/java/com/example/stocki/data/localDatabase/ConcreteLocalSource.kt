@@ -1,9 +1,7 @@
 package com.example.stocki.data.localDatabase
 
 import android.content.Context
-import com.example.stocki.data.pojos.BrandingSaved
-import com.example.stocki.data.pojos.Company
-import com.example.stocki.data.pojos.TickerTypes
+import com.example.stocki.data.pojos.*
 import javax.inject.Inject
 
 class ConcreteLocalSource @Inject constructor(context: Context):localSource {
@@ -15,6 +13,9 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
     private val tickerDAO:TickerDAO by lazy { stockiDatabase.TickerDAO() }
     private val tickerLogoDAO: TickerLogoDAO by lazy {
         stockiDatabase.TickerLogoDAO()
+    }
+    private val newsLocalDAO:newsLocalDAO by lazy {
+        stockiDatabase.newsLocalDao()
     }
    /* private val tickerInfoDAO:TickerInfoDAO by lazy {
         stockiDatabase.TickerInfoDAO()
@@ -70,6 +71,18 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
 
     override fun getTickerLogo(ticker: String): BrandingSaved {
      return   tickerLogoDAO.getTickerLogo(ticker)
+    }
+
+    override suspend fun insertNews(newsLocal: List<NewsItem>) {
+        newsLocalDAO.insertNewsLocal(newsLocal)
+    }
+
+    override fun getNews(): List<NewsItem> {
+        return   newsLocalDAO.getAllNewsLocal()
+    }
+
+    override fun getNewsItemById(id: String): NewsItem {
+        return  newsLocalDAO.getNewsItemById(id)
     }
 
 }

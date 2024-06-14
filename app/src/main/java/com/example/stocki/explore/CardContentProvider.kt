@@ -15,6 +15,6 @@ fun getCardContentList(): List<CardContent> {
         CardContent("stock splits", painterResource(id = R.drawable.stocksplit),5, NavigationRoute.ExploreSplits.route),
         CardContent("Market types", painterResource(id = R.drawable.tradingmarkets),2, NavigationRoute.ExploreTypes.route),
         CardContent("Portfolio diversification", painterResource(id = R.drawable.stocki),7, NavigationRoute.ExploreTrade.route),
-        CardContent("Understanding indices", painterResource(id = R.drawable.backo),8, NavigationRoute.ExploreTrade.route)
+        CardContent("Understanding indices", painterResource(id = R.drawable.stocki),8, NavigationRoute.ExploreTrade.route)
     )
 }
