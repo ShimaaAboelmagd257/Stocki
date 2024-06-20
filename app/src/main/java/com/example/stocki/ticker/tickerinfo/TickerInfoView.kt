@@ -44,7 +44,7 @@ fun tickerInfoView(ticker: String,viewModel: TickerInfoViewModel = hiltViewModel
             ) {
                 companies?.forEach { company ->
 
-                     val fullUrl =
+                    // val fullUrl =
                   //  company.branding.logo_url?.let {
                         Constans.LoadNetworkSvgImage(
                           //  "$url?apiKey=$API_KEY"
@@ -54,7 +54,7 @@ fun tickerInfoView(ticker: String,viewModel: TickerInfoViewModel = hiltViewModel
                                  .height(200.dp)
                                  .clip(RoundedCornerShape(8.dp))
                         )
-                        Log.d("StockitickerInfo", "LOGO   \"${company.branding.logo_url}?apiKey=${Constans.Api_Key}\" ")
+                      //  Log.d("StockitickerInfo", "LOGO   \"${company.branding.logo_url}?apiKey=${Constans.Api_Key}\" ")
                         //Log.d("StockitickerInfo", "Icon   ${it}")
 
               //  }

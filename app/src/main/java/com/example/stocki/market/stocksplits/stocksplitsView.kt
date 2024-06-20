@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
-fun SplitsView (viewModel: SplitsViewmodel = hiltViewModel()) {
+fun SplitsView (viewModel: SplitsViewmodel = hiltViewModel() ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {

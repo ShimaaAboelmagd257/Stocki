@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.example.stocki.data.pojos.NewsItem
 import com.example.stocki.data.pojos.NewsItemResponse
 import com.example.stocki.utility.Constans
+import com.example.stocki.utility.Constans.ClickableUrl
 
 @Composable
 fun Feeds(newsItem: NewsItem, onItemClick: (String) -> Unit){
@@ -142,6 +143,8 @@ fun NewsItemCard(newsId: String,viewModel: FeedsViewModel = hiltViewModel()) {
             Spacer(modifier = Modifier.height(40.dp))
             Text(text = "Bublished by ", fontSize = 12.sp, fontWeight = FontWeight.Bold ,color = Color.Gray)
             Text(text = item.author , fontSize = 12.sp, color = Color.Black)
+            Text(text = "Read more in the article  ", fontSize = 12.sp, fontWeight = FontWeight.Bold ,color = Color.Gray)
+            ClickableUrl(item.article_url)
 
         }
     } ?: run {

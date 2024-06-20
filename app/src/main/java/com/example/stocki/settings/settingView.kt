@@ -1,6 +1,7 @@
 package com.example.stocki.settings
 
 import android.util.Pair
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material3.MaterialTheme
@@ -73,11 +74,15 @@ fun VerticalAlignedGrid(
 }
 
 @Composable
-fun CardGrid(cards: List<Pair<String, Int>>, columns: Int) {
+fun CardGrid(cards: List<Triple<String, Int,String>>, columns: Int ,onItemClick: (String) -> Unit) {
     VerticalAlignedGrid(columns = columns, modifier = Modifier.padding(16.dp)) {
         cards.forEach { card ->
             CustomCard(
-                modifier = Modifier.height(card.second.dp)
+                modifier = Modifier.height(card.second.dp).clickable {
+                    onItemClick(card.third)
+                }
+
+
             ) {
                 Box(Modifier.fillMaxSize().padding(16.dp)) {
                  Text(text = card.first)
@@ -90,16 +95,18 @@ fun CardGrid(cards: List<Pair<String, Int>>, columns: Int) {
 @Composable
 fun PreviewCardGrid() {
     val sampleData = listOf(
-        Pair("Stock Split", 150),
+        Pair("Stock Splits", 150),
         Pair("Stock Status", 250),
-        Pair("Daily OpenClose", 200),
-        Pair("Holidays", 100),
-        Pair("Exchange", 180),
-        Pair("Dividends", 300)
+        Pair("Daily OpenClose", 250),
+        Pair("Holidays", 150),
+        Pair("Exchange", 220),
+        Pair("Dividends", 200),
+        Pair("Profile", 210)
+
 
     )
 
-    CardGrid(cards = sampleData , columns = 2)
+  //  CardGrid(cards = sampleData , columns = 2 , onItemClick = )
 }
 
 @Preview(showBackground = true)

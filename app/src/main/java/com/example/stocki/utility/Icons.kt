@@ -78,10 +78,10 @@ fun StockMarketIcon(
             )
         }
     }
-    Icon(
+  /*  Icon(
         painter = painterResource(R.drawable.news),
         contentDescription = null
-    )
+    )*/
 }
 object Icons{
 

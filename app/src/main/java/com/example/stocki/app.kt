@@ -2,6 +2,7 @@ package com.example.stocki
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Pair
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -54,6 +55,14 @@ import javax.inject.Inject
 import androidx.work.Configuration
 import com.example.stocki.feeds.FeedStates
 import com.example.stocki.feeds.NewsItemCard
+import com.example.stocki.holidays.HolidaysView
+import com.example.stocki.market.Dailyoc.DailyOC
+import com.example.stocki.market.dividends.DividendsView
+import com.example.stocki.market.exchange.ExchangesView
+import com.example.stocki.market.status.MarketStatusView
+import com.example.stocki.market.stocksplits.SplitsViewmodel
+import com.example.stocki.settings.CardGrid
+import com.google.android.gms.common.util.CollectionUtils
 
 @HiltAndroidApp
 class App: Application() ,Configuration.Provider{
@@ -139,9 +148,9 @@ fun NetworkAvailableContent(){
               }
 
 
-              composable(NavigationRoute.Splits.route) {
+             /* composable(NavigationRoute.Splits.route) {
                   SplitsView()
-              }
+              }*/
 
               composable(NavigationRoute.Main.route) {
                   /* MarketsScreen( onTickerClicked = { ticker ->
@@ -287,9 +296,48 @@ fun funi() {
                             // tickerView()
                             // HolidaysView()
                             //  MarketStatusView()
-                            SplitsView()
+                            //SplitsView()
+                            val sampleData = CollectionUtils.listOf(
+                                Triple("Stock Splits", 150,NavigationRoute.Splits.route),
+                                Triple("Stock Status", 250 ,NavigationRoute.MarketStatus.route),
+                                Triple("Daily OpenClose", 250,NavigationRoute.MarketDailyOC.route),
+                                Triple("Holidays", 150,NavigationRoute.MarketHoliday.route),
+                                Triple("Exchange", 220,NavigationRoute.MarketExchange.route),
+                                Triple("Dividends", 200,NavigationRoute.MarketDividends.route),
+                             //   Triple("Profile", 210,NavigationRoute)
+
+
+                            )
+
+                             CardGrid(cards = sampleData , columns = 2 , onItemClick = { route ->
+                                 navController.navigate(route)
+
+                             })
 
                         }
+                        composable(NavigationRoute.Splits.route){
+                            SplitsView()
+                        }
+                        composable(NavigationRoute.MarketHoliday.route){
+                            HolidaysView()
+                        }
+                        composable(NavigationRoute.MarketStatus.route){
+                            MarketStatusView()
+                        }
+                        composable(NavigationRoute.MarketExchange.route){
+                            ExchangesView()
+                        }
+                        composable(NavigationRoute.MarketDividends.route){
+                            DividendsView()
+                        }
+                     /*   composable(
+                            "${NavigationRoute.Splits.route}/{cardTitle}"
+
+                        ) { backStackEntry ->
+                            val cardTitle = backStackEntry.arguments?.getString("cardTitle")
+                            val viewModel: SplitsViewmodel = hiltViewModel()
+                            SplitsView(viewModel,cardTitle)
+                        }*/
                         composable(NavigationRoute.Searching.route) {
                             Searching()
                         }
@@ -341,12 +389,12 @@ fun funi() {
                             ExploreBuyAndSell()
                         }
 
-                        composable(moreTab.title) {
+                       /* composable(moreTab.title) {
                             val viewModel: SearchViewmodel = hiltViewModel()
 
                             search(viewmodel = viewModel,
                                 onSearchRequested = { navController.navigate(NavigationRoute.Searching.route) })
-                        }
+                        }*/
 
                        /* composable(
                             route = "${NavigationRoute.TickerSMA.route}/{ticker}",
@@ -453,31 +501,6 @@ data class TabBarItem(
     val unselectedIcon: Painter,
     val title: String
 )
-sealed class NavigationRoute(val route: String) {
-    object SignUp : NavigationRoute("signup")
-    object SignIn : NavigationRoute("signin")
-    object Entrance : NavigationRoute("entrance")
-   // object Markets : NavigationRoute("markets")
-    object Feeds : NavigationRoute("feeds")
-    object FeedsItemInfo :NavigationRoute("feedsInfo")
-    object  FeedsList :NavigationRoute("feedsList")
-
-    object EXplore:NavigationRoute("explore")
-    object ExploreMarket :NavigationRoute("eplore")
-    object ExploreTypes :NavigationRoute("types")
-    object ExploreDividends :NavigationRoute("dividends")
-    object ExploreSplits :NavigationRoute("splits")
-    object ExploreTrade :NavigationRoute("trade")
-    object ExploreExchange :NavigationRoute("exchange")
-
-    object Main:NavigationRoute("main")
-    object Splits:NavigationRoute("stockSplits")
-    object Searching:NavigationRoute("searching")
-    object TickerInfo: NavigationRoute("tickerInfo")
-    object TickerSMA : NavigationRoute("sma")
-    object Splash : NavigationRoute("splash")
-
-}
 @Composable
 fun ProvideSharedPreferences(content: @Composable () -> Unit) {
     val context = LocalContext.current
