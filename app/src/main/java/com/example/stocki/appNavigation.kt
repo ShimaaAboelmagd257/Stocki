@@ -2,7 +2,6 @@ package com.example.stocki
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.util.Pair
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -39,9 +38,7 @@ import com.example.stocki.explore.*
 import com.example.stocki.market.stocks.MarketsScreen
 import com.example.stocki.market.bars.BarsViewModel
 import com.example.stocki.market.stocksplits.SplitsView
-import com.example.stocki.search.SearchViewmodel
 import com.example.stocki.search.Searching
-import com.example.stocki.search.search
 import com.example.stocki.splash.SplashScreen
 import com.example.stocki.ticker.technicalIndicator.SMAView
 import com.example.stocki.ticker.technicalIndicator.SmaViewModel
@@ -53,14 +50,11 @@ import com.example.stocki.utility.NetworkViewModel
 import com.example.stocki.watchlists.WatchListView
 import javax.inject.Inject
 import androidx.work.Configuration
-import com.example.stocki.feeds.FeedStates
 import com.example.stocki.feeds.NewsItemCard
 import com.example.stocki.holidays.HolidaysView
-import com.example.stocki.market.Dailyoc.DailyOC
 import com.example.stocki.market.dividends.DividendsView
 import com.example.stocki.market.exchange.ExchangesView
 import com.example.stocki.market.status.MarketStatusView
-import com.example.stocki.market.stocksplits.SplitsViewmodel
 import com.example.stocki.settings.CardGrid
 import com.google.android.gms.common.util.CollectionUtils
 

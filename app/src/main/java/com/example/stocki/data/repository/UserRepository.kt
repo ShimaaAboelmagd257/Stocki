@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.firebase.FirebaseManager
+import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.data.pojos.account.UserInfo
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseUser
@@ -25,8 +26,12 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
         }
     }
 
-    suspend fun createUser(email: String, password: String): Boolean {
-        return firebaseManager.createUser(email, password)
+
+    suspend fun sellStock(userId: String , ticker: String  , quantity: Int  , sellingPrice :Double){
+        firebaseManager.sellStock(userId,ticker,quantity,sellingPrice)
+    }
+    suspend fun buyStock(userId:String, stock : PortfolioItem){
+        firebaseManager.buyStock(userId,stock)
     }
 
     suspend fun signIn(email: String, password: String): SigninState {
@@ -34,9 +39,9 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
         return firebaseManager.signIn(email, password)
     }
 
-    suspend fun insertUser(user: UserInfo): Boolean {
-        Log.d("StockiURepo", "insertUser: ${  user.email } " )
-        return firebaseManager.insertUser(user)
+    suspend fun insertUser(name:String , email: String, password: String): Boolean {
+        Log.d("StockiURepo", "insertUser: ${email } " )
+        return firebaseManager.insertUser(name,email,password)
     }
 
     fun getCurrentUser(): FirebaseUser? {
@@ -47,15 +52,25 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
         firebaseManager.signOut()
     }
 
-    suspend fun getUser(uid: Int): UserInfo? {
+    suspend fun getUser(uid: String): UserInfo? {
         return firebaseManager.getUser(uid)
     }
 
-    suspend fun checkUserExists(email: String): Boolean {
-        Log.d("StockiURepo", "checkUserExists: ${  email } ${firebaseManager.checkUserExists(email)} " )
-
-        return firebaseManager.checkUserExists(email)
+    suspend fun  updateUserBalance(userId: String , newBalance: Double){
+        Log.d("StockiURepo", "updateUserBalance" )
+        firebaseManager.updateUserBalance(userId,newBalance)
     }
+    suspend fun getUserBalance(userId: String): Double{
+        Log.d("StockiURepo", "getUserBalance" )
+        return firebaseManager.getUserBalance(userId)
+    }
+
+    suspend fun getUserPortfolio(userId: String): List<PortfolioItem>{
+        Log.d("StockiURepo", "getUserPortfolio" )
+        return firebaseManager.getUserPortfolio(userId)
+        }
+
+
       fun getGoogleSignInIntent(): Intent {
          Log.d("StockiURepo", "getGoogleSignInIntent " )
          return firebaseManager.getGoogleSignInIntent()

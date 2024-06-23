@@ -1,10 +1,8 @@
 package com.example.stocki.data.pojos.account
 
 data class UserInfo(
-    val uid: Int,
+    val uid: String,
     val name: String,
     val email: String,
-    val password: String,
-){
-    constructor() : this(0, "", "", "")
-}
+    val balance :Double = 100.00
+)
