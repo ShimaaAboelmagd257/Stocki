@@ -50,6 +50,7 @@ import com.example.stocki.utility.NetworkViewModel
 import com.example.stocki.watchlists.WatchListView
 import javax.inject.Inject
 import androidx.work.Configuration
+import com.example.stocki.account.profile.ProfileView
 import com.example.stocki.feeds.NewsItemCard
 import com.example.stocki.holidays.HolidaysView
 import com.example.stocki.market.dividends.DividendsView
@@ -106,9 +107,11 @@ fun NetworkUnavailableContent() {
 fun NetworkAvailableContent(){
       val configuration = LocalConfiguration.current
       //val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
       ProvideSharedPreferences {
           val sharedPreferences = LocalSharedPreferences.current
           val savedSignIn = sharedPreferences.getBoolean(Constans.SAVED_SIGNIN, false)
+          val userId = sharedPreferences.getString("User_Id","User_Id")
           // val snackbarHostState = remember { SnackbarHostState() }
           val navController = rememberNavController()
           val context = LocalContext.current
@@ -123,6 +126,7 @@ fun NetworkAvailableContent(){
                       navController = navController
                   )
               }
+
               composable(NavigationRoute.Entrance.route) {
                   EntranceScreen(
                       onSignInClick = { navController.navigate(NavigationRoute.SignIn.route) },
@@ -138,7 +142,7 @@ fun NetworkAvailableContent(){
               }
 
               composable(NavigationRoute.SignUp.route) {
-                  SignUpScreen()
+                  SignUpScreen(navController = navController)
               }
 
 
@@ -150,7 +154,7 @@ fun NetworkAvailableContent(){
                   /* MarketsScreen( onTickerClicked = { ticker ->
                        navController.navigate("${NavigationRoute.TickerSMA.route}/$ticker")
                    })*/
-                  funi()
+                  funi(userId)
               }
               composable(
                   route = "${NavigationRoute.TickerSMA.route}/{ticker}",
@@ -204,7 +208,7 @@ fun NetworkAvailableContent(){
 @SuppressLint("SuspiciousIndentation")
 // @Preview
 @Composable
-fun funi() {
+fun funi(userId:String) {
 
         val newsIcon = painterResource(R.drawable.newsunselected)
         val newsFilledIcon = painterResource(R.drawable.news)
@@ -298,7 +302,7 @@ fun funi() {
                                 Triple("Holidays", 150,NavigationRoute.MarketHoliday.route),
                                 Triple("Exchange", 220,NavigationRoute.MarketExchange.route),
                                 Triple("Dividends", 200,NavigationRoute.MarketDividends.route),
-                             //   Triple("Profile", 210,NavigationRoute)
+                                Triple("Profile", 210,NavigationRoute.Profile.route)
 
 
                             )
@@ -312,6 +316,7 @@ fun funi() {
                         composable(NavigationRoute.Splits.route){
                             SplitsView()
                         }
+
                         composable(NavigationRoute.MarketHoliday.route){
                             HolidaysView()
                         }
@@ -323,6 +328,9 @@ fun funi() {
                         }
                         composable(NavigationRoute.MarketDividends.route){
                             DividendsView()
+                        }
+                        composable(NavigationRoute.Profile.route){
+                            ProfileView(userId = userId)
                         }
                      /*   composable(
                             "${NavigationRoute.Splits.route}/{cardTitle}"

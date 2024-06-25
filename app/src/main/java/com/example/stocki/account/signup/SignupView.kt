@@ -20,16 +20,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.stocki.NavigationRoute
 import com.example.stocki.R
+import com.example.stocki.account.signin.SigninState
 
 
 @Composable
-    fun SignUpScreen(signUpViewModel: SignupViewModel = hiltViewModel()) {
+    fun SignUpScreen(signUpViewModel: SignupViewModel = hiltViewModel() , navController: NavController) {
         var name by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var confirmPassword by remember { mutableStateOf("") }
         val viewState by signUpViewModel.viewState.observeAsState()
+
+    if (viewState is SignupState.Success) {
+        navController.navigate(NavigationRoute.Main.route)
+    }
         Image(
             painter = painterResource(id = R.drawable.greensecondrayback),
             contentDescription = null,
@@ -90,8 +97,8 @@ import com.example.stocki.R
                     CircularProgressIndicator()
                 }
                 is SignupState.Success -> {
-                    // Navigate to the next screen
-                    Log.d("StockiSignUp","${name} , ${email} , ${password} , ${confirmPassword}")
+                    Toast.makeText(LocalContext.current, "Signup successfully ", Toast.LENGTH_SHORT).show()
+                    Log.d("StockiSignUp","${name} , ${email} , ${confirmPassword}")
 
                 }
                 is SignupState.Error -> {

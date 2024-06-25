@@ -13,6 +13,8 @@ import javax.inject.Singleton
 
 @Singleton
 class SignupWithGoogleUseCase @Inject constructor(private val userRepository: UserRepository, private val sharedPreference: SharedPreference) {
+
+
     suspend fun signInWithGoogle(data: Intent?): Boolean {
         return withContext(Dispatchers.IO) {
             try {

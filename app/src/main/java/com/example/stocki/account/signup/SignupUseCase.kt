@@ -24,12 +24,12 @@ class SignupUseCase @Inject constructor(private val userRepository: UserReposito
             }
 
             // Create a new user entity
-            val user = createUserEntity(intent)
+            //val user = createUserEntity(intent)
 
             // Save the user data
-            userRepository.insertUser(user)
+            val isInserted  = userRepository.insertUser(intent.name,intent.email,intent.password)
 
-            return@withContext true
+         return@withContext isInserted
         }
     }
     /*suspend fun signupWithGoogle(intent: SignupIntent): Boolean{
@@ -45,13 +45,12 @@ class SignupUseCase @Inject constructor(private val userRepository: UserReposito
                 intent.password == intent.confirmPassword
     }
 
-    private fun createUserEntity(intent: SignupIntent): UserInfo {
+   /* private fun createUserEntity(intent: SignupIntent): UserInfo {
         return UserInfo(
-            uid = -1,
+            uid = "",
             name = intent.name,
             email = intent.email,
-            password = intent.password
         )
-    }
+    }*/
 }
 

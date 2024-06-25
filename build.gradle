@@ -8,7 +8,18 @@ buildscript {
             url = uri("https://storage.googleapis.com/r8-releases/raw")
         }*/
     }
+/*build.gradle (project-level)
 
+    Add rules to include the Google Services Gradle plugin:
+        classpath 'com.google.gms:google-services:4.4.1'
+
+
+
+app/build.gradle
+
+    Add the library dependency:
+        implementation 'com.google.firebase:firebase-firestore:24.11.0'
+*/
     dependencies {
         classpath 'com.android.tools.build:gradle:7.3.1'
         classpath 'com.google.gms:google-services:4.3.15'

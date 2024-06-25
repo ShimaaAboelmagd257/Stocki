@@ -11,6 +11,8 @@ import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.data.pojos.account.UserInfo
 import com.example.stocki.data.pojos.account.userTransaction
+import com.example.stocki.data.sharedpreferences.SharedPreference
+import com.example.stocki.data.sharedpreferences.SharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -32,22 +34,23 @@ import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 @Singleton
-class FirebaseManager @Inject constructor( context: Context) {
+class FirebaseManager @Inject constructor( context: Context , val sharedPreference: SharedPreference) {
 
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val usersReference: DatabaseReference = database.reference.child("User")
+   // private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+   // private val usersReference: DatabaseReference = database.reference.child("User")
     private val fireStore : FirebaseFirestore = FirebaseFirestore.getInstance()
-    private val userCollection : CollectionReference = fireStore.collection("User")
+    private val userCollection : CollectionReference = fireStore.collection("users")
     private val context: Context = context.applicationContext
+   // private val sharedPreferences: SharedPreference = SharedPreferences()
    // private val intialBalance :Double = 100.00
     companion object {
         @Volatile
         private var instance: FirebaseManager? = null
 
-        fun getInstance(context: Context): FirebaseManager {
+        fun getInstance(context: Context ,sharedPreference: SharedPreference ): FirebaseManager {
             return instance ?: synchronized(this) {
-                instance ?: FirebaseManager(context).also { instance = it }
+                instance ?: FirebaseManager(context, sharedPreference).also { instance = it }
             }
         }
     }
@@ -66,7 +69,7 @@ class FirebaseManager @Inject constructor( context: Context) {
             val result = mAuth.signInWithEmailAndPassword(email,password).await()
             val userId = result.user?.uid?: throw IllegalStateException("User Id shouldn't be null")
             Log.d("StockiFirebaseDataHandle", "Login success for userId ${userId}")
-
+             sharedPreference.addString("User_Id",userId)
             SigninState.Success
         }catch (e:Exception){
             SigninState.Error(e.message?:"Error loging the User because ${e.message}")
@@ -159,7 +162,9 @@ class FirebaseManager @Inject constructor( context: Context) {
            val user = UserInfo(uid = userId , email = email,name = name , balance = 100.0)
             userCollection.document(userId).set(user).await()
            Log.d("FirebaseDataHandle", "Value inserted for UserId is: ${userId}")
-           true
+          sharedPreference.addString("User_Id",userId)
+
+          true
        } catch (e: Exception) {
            Log.e("FirebaseDataHandle", "Error inserting user: ${e.message}")
            false
@@ -253,6 +258,16 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
            null
        }
    }
+    suspend fun updateUser(user : UserInfo):Boolean{
+        return try {
+            userCollection.document(user.uid).set(user).await()
+            true
+        }catch (e:Exception){
+            Log.d("StockiFirebaseDataHandle", "Error updateUser: ${e.message}" )
+
+            false
+        }
+    }
 
     suspend fun  updateUserBalance(userId: String , newBalance: Double){
         userCollection.document(userId).update("balance" , newBalance).await()
@@ -269,17 +284,28 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
 
         }
     }
-   /* suspend fun checkUserExists(email: String): Boolean {
+    suspend fun updatePortfolio(userId: String , item: PortfolioItem):Boolean{
         return try {
-            val dataSnapshot = usersReference.orderByChild("email").equalTo(email).get().await()
-            Log.d("StockiFirebaseDataHandle", "checkUserExists: " + dataSnapshot.exists())
+            userCollection.document(userId).collection("portfolio").document(item.ticker).set(item).await()
+            true
+        }catch (e:Exception){
+            Log.d("StockiFirebaseDataHandle", "Error User updatePortfolio: ${e.message}" )
 
-            dataSnapshot.exists()
-
-        } catch (e: Exception) {
             false
         }
-    }*/
+    }
+    suspend fun checkUserExists(email: String): Boolean {
+        return try {
+           val querySnapshot = userCollection.whereEqualTo("email",email).get().await()
+            Log.d("StockiFirebaseDataHandle", "checking User existance: "+querySnapshot.documents.isNotEmpty() )
+
+            querySnapshot.documents.isNotEmpty()
+        } catch (e: Exception) {
+            Log.d("StockiFirebaseDataHandle", "Error checking User existance: ${e.message} " )
+
+            false
+        }
+    }
      fun getGoogleSignInAccount(data: Intent?): GoogleSignInAccount? {
         // Extract GoogleSignInAccount from the intent data
         return data?.let { GoogleSignIn.getSignedInAccountFromIntent(it).getResult(ApiException::class.java) }

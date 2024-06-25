@@ -7,21 +7,23 @@ import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.firebase.FirebaseManager
 import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.data.pojos.account.UserInfo
+import com.example.stocki.data.sharedpreferences.SharedPreference
+import com.example.stocki.data.sharedpreferences.SharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserRepository  @Inject  constructor(private val firebaseManager: FirebaseManager) {
+class UserRepository  @Inject  constructor(private val firebaseManager: FirebaseManager ) {
 
     companion object {
         @Volatile
         private var instance: UserRepository? = null
 
-        fun getInstance(context: Context): UserRepository {
+        fun getInstance(context: Context,sharedPreference: SharedPreference): UserRepository {
             return instance ?: synchronized(this) {
-                instance ?: UserRepository(FirebaseManager.getInstance(context)).also { instance = it }
+                instance ?: UserRepository(FirebaseManager.getInstance(context,sharedPreference)).also { instance = it }
             }
         }
     }
@@ -33,7 +35,9 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
     suspend fun buyStock(userId:String, stock : PortfolioItem){
         firebaseManager.buyStock(userId,stock)
     }
-
+    suspend fun checkUserExists(email: String): Boolean {
+       return firebaseManager.checkUserExists(email)
+    }
     suspend fun signIn(email: String, password: String): SigninState {
         Log.d("StockiURepo", "signIn: ${  email  + password } ${firebaseManager.signIn(email, password)} " )
         return firebaseManager.signIn(email, password)
@@ -69,8 +73,12 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
         Log.d("StockiURepo", "getUserPortfolio" )
         return firebaseManager.getUserPortfolio(userId)
         }
-
-
+    suspend fun updatePortfolio(userId: String , item: PortfolioItem):Boolean {
+        return firebaseManager.updatePortfolio(userId,item)
+    }
+    suspend fun updateUser(user : UserInfo):Boolean {
+        return firebaseManager.updateUser(user)
+    }
       fun getGoogleSignInIntent(): Intent {
          Log.d("StockiURepo", "getGoogleSignInIntent " )
          return firebaseManager.getGoogleSignInIntent()
