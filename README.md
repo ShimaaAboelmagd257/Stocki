@@ -10,7 +10,12 @@
 - **Google Sign-In and Sign-Up:** Seamless authentication using Google accounts.
 - **Firebase Integration:** Utilizes Firebase services for enhanced authentication and data management.
 - **Profile Page:** Personalized profile page for users to manage their preferences and settings.
-
+- **Virtual Trading:** Simulate stock trading with virtual currency to practice and test your trading strategies.
+- **News Feed:** Stay updated with the latest news and developments in the stock market.
+- **Performance:** Track and analyze the performance of your virtual portfolio over time.
+- **Watchlist:** Save and monitor tickers that you want to watch.
+- **Explore Features:** Provides cards explaining the basics of stock investment for beginner investors.
+  
 ## User Interface with Jetpack Compose
 
 - **Stocki's** user interface is built using Jetpack Compose, the modern toolkit for building native Android UI. Instead of traditional XML layout files, Jetpack Compose allows for UI construction using composable functions.
