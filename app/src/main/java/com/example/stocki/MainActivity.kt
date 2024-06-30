@@ -20,11 +20,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.stocki.account.signup.SignUpScreen
 import com.example.stocki.account.signup.SignupViewModel
+import com.example.stocki.data.localDatabase.StockiDatabase
 import com.example.stocki.databinding.ActivityMainBinding
 import com.example.stocki.data.remoteDatabase.StockiClient
 import com.example.stocki.notification.feedsWorker
@@ -36,16 +38,22 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var db: StockiDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
      //   requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         super.onCreate(savedInstanceState)
         val configuration = resources.configuration
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
+        db = Room.databaseBuilder(
+            applicationContext,
+            StockiDatabase::class.java, "Stocki Database"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
         setContent{
             MyApp()
         }
-       val periodicWorkRequest = PeriodicWorkRequestBuilder<feedsWorker>(1, TimeUnit.MINUTES).build()
+       val periodicWorkRequest = PeriodicWorkRequestBuilder<feedsWorker>(1, TimeUnit.HOURS).build()
 
       WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             "NewsWork",

@@ -17,6 +17,9 @@ interface localSource {
     fun getAllTickerInfo(): List<Company>
     suspend fun insertTickerInfo(brandingSaved: List<Company>)
 */
+    suspend fun insertMarketLocal(aggregateData: List<AggregateData>)
+    fun getAllTickersLocal(): List<AggregateData>
+    fun getTickerItemById(T:String) : AggregateData
 
     fun getAllTickerLogo(): List<BrandingSaved>
     suspend fun insertTickerLogo(brandingSaved: List<BrandingSaved>)

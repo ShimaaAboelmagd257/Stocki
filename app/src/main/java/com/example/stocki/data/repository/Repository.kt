@@ -34,6 +34,16 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         localSource.insertTickerInfo(company)
 
     }*/
+     suspend fun insertMarketLocal(aggregateData: List<AggregateData>){
+         localSource.insertMarketLocal(aggregateData)
+     }
+
+    fun getAllTickersLocal(): List<AggregateData>{
+        return localSource.getAllTickersLocal()
+    }
+    fun getTickerItemById(T:String) : AggregateData{
+        return localSource.getTickerItemById(T)
+    }
     suspend fun getTickerLogo(ticker : String): BrandingSaved? {
      return withContext(Dispatchers.IO) {
          localSource.getTickerLogo(ticker)
@@ -98,10 +108,19 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         return remoteSource.getAggregateBars(stocksTicker, multiplier, timespan, from, to)
     }
 
-    suspend fun getGroupedDailyBars(date: String): GroupedDailyBars {
-        Log.d("StockiRepo", "getGroupedDailyBars  ${date}" )
+    suspend fun getGroupedDailyBars(date: String): List<AggregateData> {
+        return  withContext(Dispatchers.IO) {
+            val localdata = localSource.getAllTickersLocal()
+            if (localdata.isNotEmpty()){
+                localdata
+                Log.d("StockiRepo", "getGroupedDailyBars  Locally" )
+            }
+            val response = remoteSource.getGroupedDailyBars(date)
+            localSource.insertMarketLocal(response)
+            Log.d("StockiRepo", "getGroupedDailyBars  ${date}" )
+            remoteSource.getGroupedDailyBars(date)
+        }
 
-        return remoteSource.getGroupedDailyBars(date)
     }
 
     suspend fun getDailyOpenClosePrices(

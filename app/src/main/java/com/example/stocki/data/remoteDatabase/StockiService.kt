@@ -55,9 +55,9 @@ interface StockiService {
         @Query("cik") cik: String = "", // Specify the CIK code
         @Query("date") date: String = "", // Specify a point in time
         @Query("search") search: String = "", // Search for terms within ticker and/or company name
-        @Query("active") active: Boolean = true, // Specify if tickers should be actively traded
-        @Query("limit") limit: Int = 100, // Limit the number of results
-        @Query("sort") sort: String = "" ,// Sort field used for ordering*/
+        @Query("active") active: Boolean = true, // Specify if tickers should be actively traded */
+        @Query("limit") limit: Int ,
+        //@Query("sort") sort: String = "" ,// Sort field used for ordering*/
         @Query("apiKey") apiKey: String
     ):TickerResponse
 

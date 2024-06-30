@@ -11,8 +11,7 @@ class MarketUseCase @Inject constructor(private val repository: Repository) {
     suspend operator fun invoke(date: String): MarketState {
         return withContext(Dispatchers.IO) {
             val data = repository.getGroupedDailyBars(date)
-            val resultsArray = data.results
-            MarketState.Data(resultsArray)
+            MarketState.Data(data)
 
         }
     }

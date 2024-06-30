@@ -26,7 +26,7 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel(), onTickerClicked:
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchData("2024-04-05") // Fetch data automatically when the screen is displayed
+        viewModel.fetchData("2024-06-27") // Fetch data automatically when the screen is displayed
         Log.d("StockiMain", "getGroupedDailyBars ${viewModel.fetchData("2024-04-05")}")
       //  viewModel.fetchTickerLogo()
 

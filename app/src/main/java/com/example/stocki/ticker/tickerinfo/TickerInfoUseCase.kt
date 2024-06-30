@@ -26,7 +26,7 @@ class TickerInfoUseCase @Inject constructor(val repository: Repository) {
                     val brandingList = resultsList.mapNotNull  {
 
                         BrandingSaved(
-                            ticker = it.ticker,
+                            ticker =  it.ticker,
                             logoUrl = it.branding?.logo_url,
                             iconUrl = it.branding?.icon_url
                         )

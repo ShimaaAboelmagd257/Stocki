@@ -55,8 +55,8 @@ class StockiClient @Inject  constructor(): RemoteSource {
         return stockiService.getAggregateBars(stocksTicker, multiplier, timespan, from, to, "desc" ,apiKey)
     }
 
-    override suspend fun getGroupedDailyBars(date: String): GroupedDailyBars {
-        return stockiService.getGroupedDailyBars(date)
+    override suspend fun getGroupedDailyBars(date: String): List<AggregateData> {
+        return stockiService.getGroupedDailyBars(date).results
     }
 
     override suspend fun getDailyOpenClosePrices(
@@ -90,7 +90,7 @@ class StockiClient @Inject  constructor(): RemoteSource {
     type:String
     /*,market: String ,exchange: String ,cusip: String ,cik: String,date: String
                                    ,search: String,sort: String*/): TickerResponse {
-        return stockiService.getTicker(type,apiKey)
+        return stockiService.getTicker(type,300,apiKey)
     }
 
     override suspend fun getTickerInfo(ticker: String): CompanyResponse {

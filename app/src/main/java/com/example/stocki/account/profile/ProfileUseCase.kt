@@ -22,11 +22,17 @@ class ProfileUseCase @Inject constructor(private val repository: UserRepository)
     suspend fun updateUser(user : UserInfo):Boolean {
         return repository.updateUser(user)
     }
-     suspend fun  updateUserBalance(userId: String , newBalance: Double){
+    suspend fun  updateUserBalance(userId: String , newBalance: Double){
        repository.updateUserBalance(userId,newBalance)
     }
     suspend fun getUserBalance(userId: String): Double{
         return   repository.getUserBalance(userId)
+    }
+    suspend fun sellStock(userId: String , ticker: String  , quantity: Int  , sellingPrice :Double){
+     repository.sellStock(userId,ticker,quantity,sellingPrice)
+    }
+    suspend fun buyStock(userId:String, stock : PortfolioItem){
+       repository.buyStock(userId,stock)
     }
 
 }

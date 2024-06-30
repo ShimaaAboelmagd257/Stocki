@@ -1,5 +1,6 @@
 package com.example.stocki.account.profile
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun ProfileView(viewModel: ProfileViewmodel = hiltViewModel() , userId:String) {
     val state by viewModel.state.collectAsState()
@@ -35,11 +37,11 @@ fun ProfileView(viewModel: ProfileViewmodel = hiltViewModel() , userId:String) {
                 val profileInfo = profileState.user
                    Text(text = profileInfo.name)
                    Text(text = profileInfo.email)
-                   Text(text = profileInfo.balance.toString())
+                 //  Text(text = profileInfo.balance.toString())
             }
             }
         is ProfileState.Error -> {
-            Log.d("StockiProfileView", "Error in ProfileView  ${profileState.error}")
+            Log.e("StockiProfileView", "Error in ProfileView  ${profileState.error}")
         }
         ProfileState.Loading -> {
             CircularProgressIndicator(modifier = Modifier.padding(150.dp,300.dp))

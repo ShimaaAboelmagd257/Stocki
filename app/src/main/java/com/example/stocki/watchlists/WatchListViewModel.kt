@@ -14,7 +14,7 @@ class WatchListViewModel @Inject constructor(val watchListUseCase: WatchListsUse
 
 
     private val _state = MutableStateFlow<WatchListsStates>(WatchListsStates.Loading)
-    val state: StateFlow<WatchListsStates> = _state
+    val watchListState: StateFlow<WatchListsStates> = _state
 
     fun fetchData() {
         viewModelScope.launch {

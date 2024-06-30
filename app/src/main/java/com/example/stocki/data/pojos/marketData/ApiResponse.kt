@@ -1,6 +1,7 @@
 package com.example.stocki.data.pojos
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
@@ -43,12 +44,15 @@ data class DailyOpenCloseResponse(
 @Parcelize
 data class AggregateData(
     @PrimaryKey(autoGenerate = true)
+    val id:Long = 0,
     val T: String, //ticker name
     val c: Double, // Closing price
     val h: Double, // High price
     val l: Double,  // Low price
     val n: Int,   // Number of items in the bar
     val o: Double,  // Opening price
+    @JvmField
+    @ColumnInfo(name = "timestamp")
     val t: Long,   // Timestamp
     val v: Double,    // Volume
     val vw: Double  //Volume Weighted Average Price

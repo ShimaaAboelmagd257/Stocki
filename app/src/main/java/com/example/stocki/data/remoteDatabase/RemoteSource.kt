@@ -9,9 +9,6 @@ import com.example.stocki.data.pojos.refrenceData.ConditionResponse
 import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
 import com.example.stocki.data.pojos.refrenceData.FinancialsResponse
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
 import javax.inject.Singleton
 
 @Singleton
@@ -25,7 +22,7 @@ interface RemoteSource {
         to: String
     ): PolygonApiResponse
 
-    suspend fun getGroupedDailyBars(date: String): GroupedDailyBars
+    suspend fun getGroupedDailyBars(date: String): List<AggregateData>
 
     suspend fun getDailyOpenClosePrices(
         stocksTicker: String,

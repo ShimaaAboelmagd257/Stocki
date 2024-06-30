@@ -255,6 +255,7 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
            val snapshot = userCollection.document(uid).get().await()
            snapshot.toObject(UserInfo::class.java)?: throw IllegalStateException("User Not Found")
        } catch (e: Exception) {
+           Log.e("StockiFirebaseDataHandle", "Error fetching user data  for : " + e.message)
            null
        }
    }
@@ -263,8 +264,7 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
             userCollection.document(user.uid).set(user).await()
             true
         }catch (e:Exception){
-            Log.d("StockiFirebaseDataHandle", "Error updateUser: ${e.message}" )
-
+            Log.e("StockiFirebaseDataHandle", "Error updateUser: ${e.message}" )
             false
         }
     }
@@ -289,8 +289,7 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
             userCollection.document(userId).collection("portfolio").document(item.ticker).set(item).await()
             true
         }catch (e:Exception){
-            Log.d("StockiFirebaseDataHandle", "Error User updatePortfolio: ${e.message}" )
-
+            Log.e("StockiFirebaseDataHandle", "Error User updatePortfolio: ${e.message}" )
             false
         }
     }
@@ -301,7 +300,7 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
 
             querySnapshot.documents.isNotEmpty()
         } catch (e: Exception) {
-            Log.d("StockiFirebaseDataHandle", "Error checking User existance: ${e.message} " )
+            Log.e("StockiFirebaseDataHandle", "Error checking User existance: ${e.message} " )
 
             false
         }

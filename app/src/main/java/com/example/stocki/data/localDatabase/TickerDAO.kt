@@ -1,9 +1,6 @@
 package com.example.stocki.data.localDatabase
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.stocki.data.pojos.*
 
 
@@ -27,6 +24,20 @@ interface newsLocalDAO {
 
     @Query("SELECT * FROM newsLocal WHERE id = :id")
     fun getNewsItemById(id:String) : NewsItem
+}
+@Dao
+interface marketDAO {
+
+    @Query("SELECT * FROM AggregateData")
+    fun getAllTickersLocal(): List<AggregateData>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMarketLocal(aggregateData: List<AggregateData>)
+
+    @Query("SELECT * FROM AggregateData WHERE T = :T")
+    fun getTickerItemById(T:String) : AggregateData
+    @Delete
+    fun deleteMarketLocal(aggregateData: List<AggregateData>)
 }
 
 

@@ -24,7 +24,7 @@ import java.util.Collections.emptyList
 @Composable
 fun  WatchListView(viewModel: WatchListViewModel = hiltViewModel() , onInsertClicked: () -> Unit ) {
 
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.watchListState.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.fetchData()
 

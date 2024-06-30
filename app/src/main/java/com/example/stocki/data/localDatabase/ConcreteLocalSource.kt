@@ -10,12 +10,17 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
     private val watchListDao:WatchListDao by lazy {
         stockiDatabase.WatchListDao()
     }
-    private val tickerDAO:TickerDAO by lazy { stockiDatabase.TickerDAO() }
+    private val tickerDAO:TickerDAO by lazy {
+        stockiDatabase.TickerDAO()
+    }
     private val tickerLogoDAO: TickerLogoDAO by lazy {
         stockiDatabase.TickerLogoDAO()
     }
     private val newsLocalDAO:newsLocalDAO by lazy {
         stockiDatabase.newsLocalDao()
+    }
+    private val marketDAO:marketDAO by lazy {
+        stockiDatabase.marketDao()
     }
    /* private val tickerInfoDAO:TickerInfoDAO by lazy {
         stockiDatabase.TickerInfoDAO()
@@ -54,6 +59,18 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
         watchListDao.deleteTicker(ticker)
     }
 
+    override suspend fun insertMarketLocal(aggregateData: List<AggregateData>) {
+        marketDAO.insertMarketLocal(aggregateData)
+    }
+
+    override fun getAllTickersLocal(): List<AggregateData> {
+        return marketDAO.getAllTickersLocal()
+    }
+
+    override fun getTickerItemById(T: String): AggregateData {
+         return marketDAO.getTickerItemById(T)
+    }
+
     /* override fun getAllTickerInfo(): List<Company> {
        return  tickerInfoDAO.getAllTickerInfo()
      }
@@ -84,5 +101,6 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
     override fun getNewsItemById(id: String): NewsItem {
         return  newsLocalDAO.getNewsItemById(id)
     }
+
 
 }
