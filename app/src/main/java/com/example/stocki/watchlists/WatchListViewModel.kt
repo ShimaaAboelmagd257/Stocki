@@ -2,6 +2,7 @@ package com.example.stocki.watchlists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.stocki.data.pojos.AggregateData
 import com.example.stocki.data.pojos.TickerTypes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,11 +28,11 @@ class WatchListViewModel @Inject constructor(val watchListUseCase: WatchListsUse
             }
         }
     }
-    fun removeTicker(ticker: TickerTypes) {
+    fun removeTicker(ticker: AggregateData) {
         watchListUseCase.deleteWatchTicker(ticker)
         _state.value = WatchListsStates.Deleting("delted")
     }
-    fun insertData(watchList: List<TickerTypes>) {
+    fun insertData(watchList: AggregateData) {
         viewModelScope.launch {
              watchListUseCase.insertWatchList(watchList)
             _state.value = WatchListsStates.Success("success")

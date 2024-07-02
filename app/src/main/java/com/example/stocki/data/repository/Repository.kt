@@ -41,8 +41,8 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
     fun getAllTickersLocal(): List<AggregateData>{
         return localSource.getAllTickersLocal()
     }
-    fun getTickerItemById(T:String) : AggregateData{
-        return localSource.getTickerItemById(T)
+    suspend fun getTickerItemById(T:String) : AggregateData{
+        return withContext(Dispatchers.IO) { localSource.getTickerItemById(T)}
     }
     suspend fun getTickerLogo(ticker : String): BrandingSaved? {
      return withContext(Dispatchers.IO) {
@@ -62,14 +62,16 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
             localSource.insertTickerLogo(brandingSaved)
         }
 
-    } fun getAllWatchLists(): List<TickerTypes>{
+    } fun getAllWatchLists(): List<AggregateData>{
         return localSource.getAllWatchLists()
     }
-    suspend fun insertTicker(tickerTypes: List<TickerTypes>){
+    suspend fun insertTicker(tickerTypes: AggregateData){
         localSource.insertTicker(tickerTypes)
     }
-
-    fun deleteTicker(ticker : TickerTypes){
+     fun getTickerById(T: String): AggregateData {
+         return localSource.getTickerById(T)
+    }
+    fun deleteTicker(ticker : AggregateData){
         localSource.deleteTicker(ticker)
     }
     fun getAllTickerTypes(): List<TickerTypes>{
@@ -206,68 +208,91 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         assetClass: String ,
         locale: String
     ): TickerTypesResponse {
-        Log.d("StockiRepo", "getTickerTypes " )
+        Log.d("StockiRepo", "getTickerTypes ")
 
-        return remoteSource.getTickerTypes(assetClass, locale)
+        return withContext(Dispatchers.IO) {
+            remoteSource.getTickerTypes(assetClass, locale)
+        }
     }
 
     suspend fun getMarketHolidays(): List<MarketHoliday> {
-        Log.d("StockiRepo", "getMarketHolidays  " )
+        Log.d("StockiRepo", "getMarketHolidays  ")
 
-        return remoteSource.getMarketHolidays()
+        return withContext(Dispatchers.IO) {
+            remoteSource.getMarketHolidays()
+        }
     }
 
     suspend fun getMarketStatus(): MarketStatusResponse {
-        Log.d("StockiRepo", "getMarketStatus " )
+        Log.d("StockiRepo", "getMarketStatus ")
 
-        return remoteSource.getMarketStatus()
+        return withContext(Dispatchers.IO) {
+            remoteSource.getMarketStatus()
+        }
     }
 
     suspend fun getStockSplits(): StockSplitResponse {
-        Log.d("StockiRepo", "getStockSplits" )
+        Log.d("StockiRepo", "getStockSplits")
 
-        return remoteSource.getStockSplits()
+        return withContext(Dispatchers.IO) {
+            remoteSource.getStockSplits()
+        }
     }
-
     suspend fun getDividends(): DividendsResponse {
-        Log.d("StockiRepo", "getDividends  " )
+        Log.d("StockiRepo", "getDividends  ")
 
-        return remoteSource.getDividends()
+        return withContext(Dispatchers.IO) {
+            remoteSource.getDividends()
+        }
     }
 
     suspend fun getStockFinancial(ticker: String): FinancialsResponse {
-        Log.d("StockiRepo", "getStockFinancial  ${ticker}" )
+        Log.d("StockiRepo", "getStockFinancial  ${ticker}")
 
-        return remoteSource.getStockFinancial(ticker )
+        return withContext(Dispatchers.IO) {
+            remoteSource.getStockFinancial(ticker)
+        }
     }
-
     suspend fun getApiCondition(): ConditionResponse {
-        Log.d("StockiRepo", "getApiCondition " )
+        Log.d("StockiRepo", "getApiCondition ")
 
-        return remoteSource.getApiCondition()
+        return withContext(Dispatchers.IO) {
+            remoteSource.getApiCondition()
+        }
     }
 
     suspend fun getExchanges(): Exchange {
-        Log.d("StockiRepo", "getExchanges " )
-        return remoteSource.getExchanges()
+        Log.d("StockiRepo", "getExchanges ")
+        return withContext(Dispatchers.IO) {
+            remoteSource.getExchanges()
+        }
     }
     suspend fun getSMA(
         stockTicker: String
-    ): SimpleMovingAverage{
-        return remoteSource.getSMA(stockTicker)
+    ): SimpleMovingAverage {
+        return withContext(Dispatchers.IO) {
+            remoteSource.getSMA(stockTicker)
+        }
     }
-
     suspend fun getEMA(
         stockTicker: String
-    ): ExponintialMovingAverage{return remoteSource.getEMA(stockTicker)}
+    ): ExponintialMovingAverage {
+        return withContext(Dispatchers.IO) { remoteSource.getEMA(stockTicker)
 
+        }
+    }
     suspend fun getMACD(
         stockTicker: String
-    ): MovingAverageDivergence{
-        return remoteSource.getMACD(stockTicker)
+    ): MovingAverageDivergence {
+        return withContext(Dispatchers.IO) {
+            remoteSource.getMACD(stockTicker)
+        }
     }
-
     suspend fun getRSI(
         stockTicker: String
-    ): RelativeStengthIndex{return remoteSource.getRSI(stockTicker)}
+    ): RelativeStengthIndex {
+        return withContext(Dispatchers.IO) {
+            remoteSource.getRSI(stockTicker)
+        }
+    }
 }

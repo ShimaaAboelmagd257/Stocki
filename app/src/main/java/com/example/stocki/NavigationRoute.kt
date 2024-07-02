@@ -9,6 +9,7 @@ sealed class NavigationRoute(val route: String) {
     object FeedsItemInfo :NavigationRoute("feedsInfo")
     object  FeedsList :NavigationRoute("feedsList")
     object Profile:NavigationRoute("profile")
+    object Portfolio:NavigationRoute("portfolio")
 
 
     object EXplore:NavigationRoute("explore")

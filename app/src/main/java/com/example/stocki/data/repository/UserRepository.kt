@@ -5,12 +5,14 @@ import android.content.Intent
 import android.util.Log
 import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.firebase.FirebaseManager
+import com.example.stocki.data.firebase.tradingResult
 import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.data.pojos.account.UserInfo
 import com.example.stocki.data.sharedpreferences.SharedPreference
-import com.example.stocki.data.sharedpreferences.SharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,18 +31,25 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
     }
 
 
-    suspend fun sellStock(userId: String , ticker: String  , quantity: Int  , sellingPrice :Double){
-        firebaseManager.sellStock(userId,ticker,quantity,sellingPrice)
+    suspend fun sellStock(userId: String , ticker: String  , quantity: Int  , sellingPrice :Double):tradingResult{
+        return withContext(Dispatchers.IO){
+            firebaseManager.sellStock(userId,ticker,quantity,sellingPrice)
+        }
+
     }
-    suspend fun buyStock(userId:String, stock : PortfolioItem){
-        firebaseManager.buyStock(userId,stock)
+    suspend fun buyStock(userId:String, stock : PortfolioItem): tradingResult {
+       return withContext(Dispatchers.IO) {
+            firebaseManager.buyStock(userId, stock)
+        }
     }
     suspend fun checkUserExists(email: String): Boolean {
        return firebaseManager.checkUserExists(email)
     }
     suspend fun signIn(email: String, password: String): SigninState {
         Log.d("StockiURepo", "signIn: ${  email  + password } ${firebaseManager.signIn(email, password)} " )
-        return firebaseManager.signIn(email, password)
+        return withContext(Dispatchers.IO){
+            firebaseManager.signIn(email, password)
+        }
     }
 
     suspend fun insertUser(name:String , email: String, password: String): Boolean {
@@ -64,17 +73,21 @@ class UserRepository  @Inject  constructor(private val firebaseManager: Firebase
         Log.d("StockiURepo", "updateUserBalance" )
         firebaseManager.updateUserBalance(userId,newBalance)
     }
-    suspend fun getUserBalance(userId: String): Double{
-        Log.d("StockiURepo", "getUserBalance" )
-        return firebaseManager.getUserBalance(userId)
+    suspend fun getUserBalance(userId: String): Double {
+        Log.d("StockiURepo", "getUserBalance")
+       return withContext(Dispatchers.IO) {
+            firebaseManager.getUserBalance(userId)
+        }
     }
 
-    suspend fun getUserPortfolio(userId: String): List<PortfolioItem>{
-        Log.d("StockiURepo", "getUserPortfolio" )
-        return firebaseManager.getUserPortfolio(userId)
+    suspend fun getUserPortfolio(userId: String): List<PortfolioItem> {
+        Log.d("StockiURepo", "getUserPortfolio")
+      return  withContext(Dispatchers.IO) {
+            firebaseManager.getUserPortfolio(userId)
         }
+    }
     suspend fun updatePortfolio(userId: String , item: PortfolioItem):Boolean {
-        return firebaseManager.updatePortfolio(userId,item)
+        return firebaseManager.insertPortfolio(userId,item)
     }
     suspend fun updateUser(user : UserInfo):Boolean {
         return firebaseManager.updateUser(user)

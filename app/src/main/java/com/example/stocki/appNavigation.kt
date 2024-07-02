@@ -51,12 +51,14 @@ import com.example.stocki.watchlists.WatchListView
 import javax.inject.Inject
 import androidx.work.Configuration
 import com.example.stocki.account.profile.ProfileView
+import com.example.stocki.account.profile.UserPortfolio
 import com.example.stocki.feeds.NewsItemCard
 import com.example.stocki.holidays.HolidaysView
 import com.example.stocki.market.dividends.DividendsView
 import com.example.stocki.market.exchange.ExchangesView
 import com.example.stocki.market.status.MarketStatusView
 import com.example.stocki.settings.CardGrid
+import com.example.stocki.watchlists.WatchListViewModel
 import com.google.android.gms.common.util.CollectionUtils
 
 @HiltAndroidApp
@@ -171,19 +173,21 @@ fun NetworkAvailableContent(){
 
                   }
               }
-              composable(
+             /* composable(
                   route = "${NavigationRoute.TickerInfo.route}/{ticker}",
                   arguments = listOf(navArgument("ticker") { type = NavType.StringType })
               ) { backStackEntry ->
                   val ticker = backStackEntry.arguments?.getString("ticker")
                   ticker?.let {
                       val viewModel: TickerInfoViewModel = hiltViewModel()
-                      tickerInfoView(ticker) {
-                          viewModel.fetchData(ticker)
-                      }
+                      val wathListviewModel: WatchListViewModel = hiltViewModel()
+//viewModel, wathListviewModel,
+                      tickerInfoView(ticker = ticker, userId = userId, onTrading = { navController.navigate(NavigationRoute.Portfolio.route) })
+                          //viewModel.fetchData(ticker)
+                    //  }
 
                   }
-              }
+              }*/
               /* composable(route = "${NavigationRoute.TickerSMA.route}/{ticker}",
                  arguments = listOf(navArgument("ticker") { type = NavType.StringType })){
                   backStackEntry ->
@@ -332,6 +336,9 @@ fun funi(userId:String) {
                         composable(NavigationRoute.Profile.route){
                             ProfileView(userId = userId)
                         }
+                        composable(NavigationRoute.Portfolio.route){
+                            UserPortfolio(userId = userId)
+                        }
                      /*   composable(
                             "${NavigationRoute.Splits.route}/{cardTitle}"
 
@@ -426,9 +433,8 @@ fun funi(userId:String) {
                         val ticker = backStackEntry.arguments?.getString("ticker")
                         ticker?.let {
                             val viewModel: TickerInfoViewModel = hiltViewModel()
-                            tickerInfoView(ticker) {
-                                viewModel.fetchData(ticker)
-                            }
+                            tickerInfoView(ticker, userId = userId,onTrading = { navController.navigate(NavigationRoute.Portfolio.route) })
+
 
                         }
                     }

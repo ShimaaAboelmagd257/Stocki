@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.stocki.data.pojos.AggregateData
 import com.example.stocki.data.pojos.TickerTypes
 import java.util.Collections.emptyList
 
@@ -38,9 +39,7 @@ fun  WatchListView(viewModel: WatchListViewModel = hiltViewModel() , onInsertCli
             val watchLists = watchListsStates.data ?: emptyList()
             WatchList(tickers = watchLists , onInsertClicked = onInsertClicked , onRemoveClicked = {
                     ticker -> viewModel.removeTicker(ticker)} )
-            LazyColumn {
 
-            }
         }
         is WatchListsStates.Success->{
 
@@ -57,7 +56,7 @@ fun  WatchListView(viewModel: WatchListViewModel = hiltViewModel() , onInsertCli
 }
 
 @Composable
-fun WatchList(tickers: List<TickerTypes> , onInsertClicked: () -> Unit , onRemoveClicked: (TickerTypes) -> Unit ) {
+fun WatchList(tickers: List<AggregateData>, onInsertClicked: () -> Unit, onRemoveClicked: (AggregateData) -> Unit ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(150.dp))
 
@@ -78,9 +77,9 @@ fun WatchList(tickers: List<TickerTypes> , onInsertClicked: () -> Unit , onRemov
                     Column(
                         modifier = Modifier.padding(10.dp)
                     ) {
-                        Text("name: ${ticker.name}")
-                        Text("ticker: ${ticker.ticker}")
-                        Text("locale: ${ticker.locale}")
+                        Text("name: ${ticker.T}")
+                        Text("low price: ${ticker.l}")
+                        Text("high price: ${ticker.h}")
                         IconButton(
                             onClick = { onRemoveClicked(ticker) },
                             modifier = Modifier.background(Color.Magenta , shape = CircleShape)

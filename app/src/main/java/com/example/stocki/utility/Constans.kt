@@ -127,7 +127,7 @@ object Constans {
     }
     @Composable
     fun ClickableUrl(
-        url : String,
+        url : String?,
         modifier: Modifier =Modifier
     ){
         val context = LocalContext.current
@@ -136,12 +136,14 @@ object Constans {
             withStyle(style = SpanStyle(color = Color.Blue , fontSize = 16.sp)){
                 append(url)
             }
-            addStringAnnotation(
-                tag = "URL" ,
-                annotation = url,
-                start = 0,
-                end = url.length
-            )
+            url?.let {
+                addStringAnnotation(
+                    tag = "URL" ,
+                    annotation = url,
+                    start = 0,
+                    end = it.length
+                )
+            }
         }
 
         ClickableText(text = annotation, onClick = { offset ->

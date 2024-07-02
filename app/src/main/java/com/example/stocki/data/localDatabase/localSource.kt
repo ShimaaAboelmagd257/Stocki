@@ -9,9 +9,13 @@ interface localSource {
     suspend fun insertTypes(tickerTypes: List<TickerTypes>)
 
 
-    fun getAllWatchLists(): List<TickerTypes>
-    suspend fun insertTicker(types: List<TickerTypes>)
-    fun deleteTicker(ticker : TickerTypes)
+    fun getAllWatchLists(): List<AggregateData>
+    suspend fun insertTicker(types: AggregateData)
+    fun deleteTicker(ticker : AggregateData)
+    fun getTickerById(T:String) : AggregateData
+
+
+
 
 /*
     fun getAllTickerInfo(): List<Company>

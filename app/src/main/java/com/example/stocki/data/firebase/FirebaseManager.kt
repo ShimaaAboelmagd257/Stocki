@@ -3,19 +3,14 @@ package com.example.stocki.data.firebase
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.provider.Settings.Global.getString
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.data.pojos.account.UserInfo
 import com.example.stocki.data.pojos.account.userTransaction
 import com.example.stocki.data.sharedpreferences.SharedPreference
-import com.example.stocki.data.sharedpreferences.SharedPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 
@@ -27,7 +22,6 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import dagger.Provides
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -174,10 +168,14 @@ class FirebaseManager @Inject constructor( context: Context , val sharedPreferen
     suspend fun recordTransaction(userId: String, transaction: userTransaction){
      val transactionRef = userCollection.document(userId).collection("transaction").document()
         transactionRef.set(transaction).await()
+        Log.d("FirebaseDataHandle", "Transaction inserted for UserId is: ${userId}")
 
     }
     //trading virtually ;)
-    suspend fun sellStock(userId: String , ticker: String  , quantity: Int  , sellingPrice :Double){
+    suspend fun sellStock(userId: String , ticker: String  , quantity: Int  , sellingPrice :Double):tradingResult{
+        return try {
+
+
         val portfolioRef = userCollection.document(userId).collection("portfolio").document(ticker)
         val snapshot = portfolioRef.get().await()
 
@@ -198,6 +196,8 @@ class FirebaseManager @Inject constructor( context: Context , val sharedPreferen
                     portfolioRef.delete().await()
                 }
                     recordTransaction(userId,userTransaction("sell",ticker,quantity,sellingPrice,System.currentTimeMillis()))
+
+                tradingResult.Success
             }else{
                 throw IllegalStateException("Not enough stock quantity to sell")
             }
@@ -205,9 +205,15 @@ class FirebaseManager @Inject constructor( context: Context , val sharedPreferen
             throw IllegalStateException("Stock Not Found in user PORTFOLIO")
         }
 
+        }catch (e:Exception){
+            tradingResult.Error(e.message ?: "Error")
+        }
 
     }
-suspend fun buyStock(userId:String, stock : PortfolioItem){
+suspend fun buyStock(userId:String, stock : PortfolioItem) :tradingResult{
+    return try {
+
+
    val userRef=  userCollection.document(userId)
     val userSnapshot = userRef.get().await()
     val user = userSnapshot.toObject(UserInfo::class.java)!!
@@ -229,13 +235,18 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
 
         }else{
             stockRef.set(stock).await()
+            Log.d("FirebaseDataHandle", "Portfolio inserted for UserId is: ${userId}")
+
         }
         recordTransaction(userId,userTransaction("buy",stock.ticker,stock.quantity,stock.averagePrice,System.currentTimeMillis()))
+        tradingResult.Success
     }else{
         throw IllegalStateException("Error in balance calculation ")
 
     }
-
+    }catch (e:Exception){
+        tradingResult.Error(e.message !!)
+    }
 }
 
 
@@ -248,6 +259,7 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
     fun signOut() {
         mAuth.signOut()
     }
+
 
 
    suspend fun getUser(uid: String): UserInfo? {
@@ -284,12 +296,12 @@ suspend fun buyStock(userId:String, stock : PortfolioItem){
 
         }
     }
-    suspend fun updatePortfolio(userId: String , item: PortfolioItem):Boolean{
+    suspend fun insertPortfolio(userId: String, item: PortfolioItem):Boolean{
         return try {
             userCollection.document(userId).collection("portfolio").document(item.ticker).set(item).await()
             true
         }catch (e:Exception){
-            Log.e("StockiFirebaseDataHandle", "Error User updatePortfolio: ${e.message}" )
+            Log.e("StockiFirebaseDataHandle", "Error User insertPortfolio: ${e.message}" )
             false
         }
     }

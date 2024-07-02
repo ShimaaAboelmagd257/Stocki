@@ -47,16 +47,20 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
         tickerDAO.insertTypes(tickerTypes)
     }
 
-    override fun getAllWatchLists(): List<TickerTypes> {
+    override fun getAllWatchLists(): List<AggregateData> {
         return watchListDao.getAllWatchLists()
     }
 
-    override suspend fun insertTicker(types: List<TickerTypes>) {
+    override suspend fun insertTicker(types: AggregateData) {
          watchListDao.insertTicker(types)
     }
 
-    override fun deleteTicker(ticker: TickerTypes) {
+    override fun deleteTicker(ticker:AggregateData) {
         watchListDao.deleteTicker(ticker)
+    }
+
+    override fun getTickerById(T: String): AggregateData {
+        return watchListDao.getTickerById(T)
     }
 
     override suspend fun insertMarketLocal(aggregateData: List<AggregateData>) {
