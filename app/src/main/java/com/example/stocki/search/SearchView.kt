@@ -19,20 +19,35 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.stocki.data.pojos.TickerTypes
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: () -> Unit ){
 
     val state by viewmodel.state.collectAsState()
-
+    val titleList = listOf("stocks","crypto","otc","fx","indices")
 
     LaunchedEffect(Unit) {
-        viewmodel.fetchData(listOf("stocks","crypto","otc","fx","indices"))
+        viewmodel.fetchData(titleList)
         Log.d("StockiSearch", "LaunchedEffect ")
 
     }
 
     var selectedTab by remember { mutableStateOf("otc") }
+    val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
+    val selectedTabIndex = when (selectedTab) {
+        "stocks" -> 0
+        "crypto" -> 1
+        "fx" -> 2
+        "otc" -> 3
+        "indices" -> 4
+        else -> 0
+    }
     Column(
         modifier = Modifier.fillMaxSize()
 
@@ -42,7 +57,8 @@ fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: ()
             elevation = 0.dp
         ) {
             TabRow(
-                selectedTabIndex = when {
+                selectedTabIndex =// pagerState.currentPage
+                when {
                  //   isSearching -> -1 // No tab selected when searching
                     else -> when (selectedTab) {
                         "stocks" -> 0
@@ -55,17 +71,21 @@ fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: ()
                 },
                 contentColor = Color.Black
             ) {
-                listOf("Stocks", "Crypto", "FX", "OTC", "Indices").forEachIndexed { index, text ->
+                titleList.forEachIndexed { index, text ->
                     Tab(
-                        selected = when {
-                            else -> selectedTab == text.toLowerCase()
-                        },
+                        selected =pagerState.currentPage == index,
                         onClick = {
-                                selectedTab = text.toLowerCase()
-                        },
-                        text = { Text(text) }
+                        scope.launch{
+                            pagerState.scrollToPage(index)
+                        }
+                            selectedTab = titleList[index]
+                         },
+                        text = { Text(text = text,modifier = Modifier
+                            .fillMaxWidth()) }
                     )
                 }
+
+
             }
         }
     }
@@ -79,6 +99,8 @@ fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: ()
         is SearchState.Data -> {
             val filteredData = searchState.data?.filter {
                 it.market.equals(selectedTab, ignoreCase = true)
+
+
             }
             if (filteredData.isNullOrEmpty()) {
                 Text("No data available", modifier = Modifier.padding(16.dp))
@@ -142,7 +164,8 @@ fun TickerListScreen(tickers: List<TickerTypes> ,  onSearchRequested: () -> Unit
         }
         IconButton(
             onClick = { onSearchRequested() },
-            modifier = Modifier.background(Color.Black , shape = CircleShape)
+            modifier = Modifier
+                .background(Color.Black, shape = CircleShape)
                 .align(Alignment.BottomEnd)
                 .padding(70.dp)
         ) {

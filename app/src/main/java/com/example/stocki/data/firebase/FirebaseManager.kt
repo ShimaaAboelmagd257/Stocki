@@ -169,7 +169,6 @@ class FirebaseManager @Inject constructor( context: Context , val sharedPreferen
      val transactionRef = userCollection.document(userId).collection("transaction").document()
         transactionRef.set(transaction).await()
         Log.d("FirebaseDataHandle", "Transaction inserted for UserId is: ${userId}")
-
     }
     //trading virtually ;)
     suspend fun sellStock(userId: String , ticker: String  , quantity: Int  , sellingPrice :Double):tradingResult{
@@ -212,9 +211,8 @@ class FirebaseManager @Inject constructor( context: Context , val sharedPreferen
     }
 suspend fun buyStock(userId:String, stock : PortfolioItem) :tradingResult{
     return try {
-
-
-   val userRef=  userCollection.document(userId)
+        userCollection.document(userId).collection("portfolio").document(stock.ticker).set(stock).await()
+        val userRef=  userCollection.document(userId)
     val userSnapshot = userRef.get().await()
     val user = userSnapshot.toObject(UserInfo::class.java)!!
 

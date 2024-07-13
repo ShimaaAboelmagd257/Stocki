@@ -3,8 +3,10 @@ package com.example.stocki
 import android.annotation.SuppressLint
 import android.app.Application
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material3.NavigationBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
@@ -20,10 +22,10 @@ import com.example.stocki.feeds.FeedsScreen
 import dagger.hilt.android.HiltAndroidApp
 import androidx.compose.runtime.*
 
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -47,7 +49,6 @@ import com.example.stocki.ticker.tickerinfo.tickerInfoView
 import com.example.stocki.utility.Constans
 import com.example.stocki.utility.NetworkState
 import com.example.stocki.utility.NetworkViewModel
-import com.example.stocki.watchlists.WatchListView
 import javax.inject.Inject
 import androidx.work.Configuration
 import com.example.stocki.account.profile.ProfileView
@@ -57,9 +58,11 @@ import com.example.stocki.holidays.HolidaysView
 import com.example.stocki.market.dividends.DividendsView
 import com.example.stocki.market.exchange.ExchangesView
 import com.example.stocki.market.status.MarketStatusView
+import com.example.stocki.search.search
 import com.example.stocki.settings.CardGrid
-import com.example.stocki.watchlists.WatchListViewModel
-import com.google.android.gms.common.util.CollectionUtils
+import com.example.stocki.settings.sampleData
+import com.example.stocki.splash.introItem
+
 
 @HiltAndroidApp
 class App: Application() ,Configuration.Provider{
@@ -68,6 +71,8 @@ class App: Application() ,Configuration.Provider{
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
 }
+
+
 val LocalSharedPreferences = compositionLocalOf<SharedPreferences> { error("No SharedPreferences found!") }
 @Composable
 fun MyApp() {
@@ -120,13 +125,18 @@ fun NetworkAvailableContent(){
 
           NavHost(navController, startDestination = NavigationRoute.Splash.route) {
               composable(NavigationRoute.Splash.route) {
-                  SplashScreen(
+                  /*SplashScreen(
                       onAnimationFinished = {
 
                           navController.navigate(NavigationRoute.Entrance.route) },
                       context = context,
                       navController = navController
-                  )
+                  )*/
+                   SplashScreen(introItems = introItem, onButtonClick = {  if (savedSignIn) {
+                       navController.navigate(NavigationRoute.Main.route)
+                   } else {
+                       navController.navigate(NavigationRoute.Entrance.route)
+                   }})
               }
 
               composable(NavigationRoute.Entrance.route) {
@@ -147,70 +157,16 @@ fun NetworkAvailableContent(){
                   SignUpScreen(navController = navController)
               }
 
-
-             /* composable(NavigationRoute.Splits.route) {
-                  SplitsView()
-              }*/
-
               composable(NavigationRoute.Main.route) {
-                  /* MarketsScreen( onTickerClicked = { ticker ->
-                       navController.navigate("${NavigationRoute.TickerSMA.route}/$ticker")
-                   })*/
                   funi(userId)
               }
-              composable(
-                  route = "${NavigationRoute.TickerSMA.route}/{ticker}",
-                  arguments = listOf(navArgument("ticker") { type = NavType.StringType })
-              ) { backStackEntry ->
-                  val ticker = backStackEntry.arguments?.getString("ticker")
-                  ticker?.let {
-                      val viewModel: SmaViewModel = hiltViewModel()
-                      val barsViewModel :BarsViewModel = hiltViewModel()
-                      SMAView(ticker) {
-                          viewModel.fetchData(ticker)
-                          barsViewModel.fetchData(ticker,1,"day","2024-04-20","2024-04-30")
-                      }
 
-                  }
-              }
-             /* composable(
-                  route = "${NavigationRoute.TickerInfo.route}/{ticker}",
-                  arguments = listOf(navArgument("ticker") { type = NavType.StringType })
-              ) { backStackEntry ->
-                  val ticker = backStackEntry.arguments?.getString("ticker")
-                  ticker?.let {
-                      val viewModel: TickerInfoViewModel = hiltViewModel()
-                      val wathListviewModel: WatchListViewModel = hiltViewModel()
-//viewModel, wathListviewModel,
-                      tickerInfoView(ticker = ticker, userId = userId, onTrading = { navController.navigate(NavigationRoute.Portfolio.route) })
-                          //viewModel.fetchData(ticker)
-                    //  }
-
-                  }
-              }*/
-              /* composable(route = "${NavigationRoute.TickerSMA.route}/{ticker}",
-                 arguments = listOf(navArgument("ticker") { type = NavType.StringType })){
-                  backStackEntry ->
-              val ticker = backStackEntry.arguments?.getString("ticker")
-              ticker?.let {
-                  val viewModel: SmaViewModel = hiltViewModel()
-                  val barsViewModel :BarsViewModel = hiltViewModel()
-                  SMAView(ticker) {
-                      viewModel.fetchData(ticker*//*,"day"*//*)
-                        barsViewModel.fetchData(ticker,1,"day","2024-03-26","2024-04-09")
-                    }
-
-                }
-
-            }*/
           }
       }
   }
 
 
-// setting up the individual tabs
 @SuppressLint("SuspiciousIndentation")
-// @Preview
 @Composable
 fun funi(userId:String) {
 
@@ -258,7 +214,9 @@ fun funi(userId:String) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            Scaffold( bottomBar = { TabView(tabBarItems, navController)}, content = { it ->
+            Scaffold( bottomBar = { TabView(tabBarItems, navController)}, modifier = Modifier.background(
+                Color.Transparent
+            ), content = { it ->
 
                Box( modifier = Modifier.padding(it)){
                     NavHost(
@@ -271,9 +229,11 @@ fun funi(userId:String) {
                         }
                     }
                         composable(homeTab.title) {
-                            MarketsScreen(onTickerClicked = { ticker ->
-                                navController.navigate("${NavigationRoute.TickerInfo.route}/$ticker")
-                            })
+                            MarketsScreen(
+                                onTickerClicked = { ticker ->
+                                navController.navigate("${NavigationRoute.TickerInfo.route}/$ticker") },
+                                onSearchClicked = { navController.navigate(NavigationRoute.Searching.route)
+                                })
                         }
 
                         composable(feedsTab.title) {
@@ -291,29 +251,18 @@ fun funi(userId:String) {
                         }
                         composable(searchTab.title) {
                           //  FeedsScreen()
-                            WatchListView(onInsertClicked = { navController.navigate(NavigationRoute.Searching.route)
-                            })
+                         //   WatchListView(onInsertClicked = { navController.navigate(NavigationRoute.Searching.route)
+                          //  })
+                            search(onSearchRequested = { navController.navigate(NavigationRoute.Searching.route) })
                         }
                         composable(moreTab.title) {
                             // tickerView()
                             // HolidaysView()
                             //  MarketStatusView()
                             //SplitsView()
-                            val sampleData = CollectionUtils.listOf(
-                                Triple("Stock Splits", 150,NavigationRoute.Splits.route),
-                                Triple("Stock Status", 250 ,NavigationRoute.MarketStatus.route),
-                                Triple("Daily OpenClose", 250,NavigationRoute.MarketDailyOC.route),
-                                Triple("Holidays", 150,NavigationRoute.MarketHoliday.route),
-                                Triple("Exchange", 220,NavigationRoute.MarketExchange.route),
-                                Triple("Dividends", 200,NavigationRoute.MarketDividends.route),
-                                Triple("Profile", 210,NavigationRoute.Profile.route)
 
-
-                            )
-
-                             CardGrid(cards = sampleData , columns = 2 , onItemClick = { route ->
+                             CardGrid(cards = sampleData() , columns = 2 , onItemClick = { route ->
                                  navController.navigate(route)
-
                              })
 
                         }
@@ -405,7 +354,7 @@ fun funi(userId:String) {
                                 onSearchRequested = { navController.navigate(NavigationRoute.Searching.route) })
                         }*/
 
-                       /* composable(
+                        composable(
                             route = "${NavigationRoute.TickerSMA.route}/{ticker}",
                             arguments = listOf(navArgument("ticker") { type = NavType.StringType })
                         ) { backStackEntry ->
@@ -425,7 +374,7 @@ fun funi(userId:String) {
                                 }
 
                             }
-                        }*/
+                        }
                         composable(
                         route = "${NavigationRoute.TickerInfo.route}/{ticker}",
                         arguments = listOf(navArgument("ticker") { type = NavType.StringType })
@@ -449,11 +398,9 @@ fun funi(userId:String) {
     }
 @Composable
 fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
-    var selectedTabIndex by remember {
-        mutableStateOf(0)
-    }
+    var selectedTabIndex by remember { mutableStateOf(0) }
 
-    NavigationBar {
+    NavigationBar(containerColor = Color.Transparent) {
         tabBarItems.forEachIndexed { index, tabBarItem ->
             NavigationBarItem(
                 selected = selectedTabIndex == index,
@@ -469,12 +416,11 @@ fun TabView(tabBarItems: List<TabBarItem>, navController: NavController) {
                         unselectedIcon = tabBarItem.unselectedIcon,
                         title = tabBarItem.title
                     )
-
-                }
-        },modifier = Modifier.size(100.dp),
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
                 label = {
                     Text(tabBarItem.title)
-
                 }
             )
         }

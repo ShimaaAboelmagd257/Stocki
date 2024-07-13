@@ -53,7 +53,7 @@ class TickerInfoViewModel @Inject constructor(val tickerInfoUseCase: TickerInfoU
             }
         }
     }*/
-    fun fetchTickerItemById(ticker: String) {
+  /*  fun fetchTickerItemById(ticker: String) {
         viewModelScope.launch {
             _state.value = TickerInfoState.Loading
             try {
@@ -63,7 +63,7 @@ class TickerInfoViewModel @Inject constructor(val tickerInfoUseCase: TickerInfoU
                 _state.value = TickerInfoState.Error(e.message ?: "Error fetching ticker item")
             }
         }
-    }
+    }*/
 
 
     fun buyStock(userId: String, stock: PortfolioItem) {

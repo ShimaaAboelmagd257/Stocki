@@ -1,12 +1,7 @@
 
 package com.example.stocki.ticker.technicalIndicator
-import android.app.Activity
-import android.content.pm.ActivityInfo
-import android.content.res.Configuration
 import android.util.Log
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -14,18 +9,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
 import android.graphics.Paint
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Red
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.ui.platform.LocalConfiguration
 import com.example.stocki.market.bars.BarsViewModel
 import com.example.stocki.utility.Constans.timestampsToDate
 import com.madrapps.plot.line.DataPoint
@@ -38,8 +29,7 @@ import com.madrapps.plot.line.LinePlot.Selection
 import com.madrapps.plot.line.LinePlot.XAxis
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.graphics.Color.Companion.Green
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.unit.times
 import com.madrapps.plot.line.LineGraph
 
@@ -52,32 +42,28 @@ fun Dp.toPx(): Float {
     return this.value
 }
 
-
-
 @Composable
     fun SMAView(stockTicker: String, viewModel:SmaViewModel = hiltViewModel(), barsviewModel: BarsViewModel = hiltViewModel(), onFetchData: (String) -> Unit ) {
 
     val state by viewModel.state.collectAsState()
-    val barStates by barsviewModel.state.collectAsState()
-    val configuration = LocalConfiguration.current
-    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    //val barStates by barsviewModel.state.collectAsState()
+    //val configuration = LocalConfiguration.current
+    //val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val linePlotLines = remember { mutableStateListOf<LinePlot.Line>() }
     val dataPoints = arrayListOf<DataPoint>()
-    val context = LocalContext.current
+    //val context = LocalContext.current
     // val dataPoints = mutableListOf<DataPoint>()
     //var xPos = 0f
     val dataValues = remember {
         mutableStateListOf<DataPointXLine>()
     }
     val textPaint = remember { mutableStateOf(Paint()) }
-    LaunchedEffect(isLandscape) {
+    LaunchedEffect(Unit) {
       //  context.ori = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         linePlotLines.clear()
-        if (isLandscape) {
             onFetchData(stockTicker)
-        }
-    }
 
+    }
     when (val smaState = state) {
         is SmaState.Loading -> {
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
@@ -100,23 +86,21 @@ fun Dp.toPx(): Float {
 
 
             val xLabels = timestampsToDate(timestamps)
-            val labelCount = xLabels.size
-            val totalWidth = 200.dp
-            val stepSize = totalWidth / labelCount.toFloat()
+          //  val labelCount = xLabels.size
+           // val totalWidth = 100.dp
+           // val stepSize = totalWidth / labelCount.toFloat()
             smaPrices.forEachIndexed { index, smaPrice ->
-                val xPos = (index * stepSize).toPx()
-                //+ stepSize.toPx()
+                val xPos = (index * 5.dp).toPx()
                 dataPoints.add(DataPoint(x = xPos, y = smaPrice))
-                //stepSize += 20.dp
-                Log.d("stockisma", "stepSize are ${stepSize}")
 
 
+                Log.d("stockisma", "stepSize are ${index}")
                 //  Log.d("stockisma", "closingPrices are ${closingPrices}")
                 Log.d("stockisma", "smaPrices are ${smaPrices}")
                 Log.d("stockisma", "timestamps are ${timestamps}")
             }
             val xAxis = XAxis(
-                stepSize = stepSize,
+              //  stepSize = ,
                 steps = 10,
                 unit = 1f,
                 paddingTop = 6.dp,
@@ -124,22 +108,17 @@ fun Dp.toPx(): Float {
                 roundToInt = false,
                 content = { min, offset, max ->
                     repeat(10) { index ->
-                        val xPos = (index * stepSize)
+                        //val xPos = (index * stepSize).toPx()
                         Text(
                             text = xLabels.getOrNull(index) ?: " ",//,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.caption,
                             color = MaterialTheme.colors.onSurface,
-                            modifier = Modifier.padding(start = xPos) // Align the label with the corresponding point
+                            modifier = Modifier.padding(start = index*5.dp) // Align the label with the corresponding point
                         )
                         Log.d("stockisma", "xAxis xLabels are ${xLabels}")
-                        Log.d("stockisma", "xAxis stepSize are ${stepSize}")
-
-                        /* if (value > max) {
-                        break
-                    }*/
-
+                        Log.d("stockisma", "xAxis stepSize are ${index}")
                     }
                 }
             )
@@ -179,8 +158,8 @@ fun Dp.toPx(): Float {
             }
             val linePlot = LinePlot(
                 lines = linePlotLines,
-                grid = Grid(Black, steps = 8),
-                horizontalExtraSpace = 20.dp,
+                grid = Grid(Black, steps = 9),
+                horizontalExtraSpace = 0.dp,
                  selection = Selection(
                     enabled = true,
                     highlight = LinePlot.Connection(
@@ -203,10 +182,11 @@ fun Dp.toPx(): Float {
             }
 
             Card(
-                modifier = Modifier
+                modifier = Modifier.height(300.dp).fillMaxWidth(), backgroundColor = Red
+
 
             ) {
-                if (dataPoints.isNotEmpty() && isLandscape) {
+                if (dataPoints.isNotEmpty() ) {
                     LineGraph(
                         plot = linePlot,
                         modifier = Modifier,
@@ -225,30 +205,20 @@ fun Dp.toPx(): Float {
                         }
                     )
                     Log.e("stockiSMA", "dataPoints.size" + dataPoints.size)
-
-
                 } else {
                     Log.e("stockiSMA", "dataPoints.isEmpty()" + dataPoints.isEmpty())
 
                 }
-                /*  SampleLineGraph(
-                            timestamps,
-                            linePlotLines ,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                        )*/
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(100.dp)
+                        .fillMaxHeight()
                         .drawBehind {
                             this.drawIntoCanvas {
-
-                                val width = 10f
-                                val hight = 3f
-                                val yOffset = 10f
-
+                                val width = 3f
+                                val hight = 0.5f
+                                val yOffset = 1.5f
                                 dataValues.forEach { datapoint ->
                                     drawRoundRect(
                                         color = Black,
@@ -276,14 +246,6 @@ fun Dp.toPx(): Float {
                 )
 
             }
-
-
-            //}
-            // else -> {}
-            // }
-            // }
-
-
         }
         is SmaState.Error -> {
             Text(smaState.error, modifier = Modifier.padding(16.dp))
@@ -322,133 +284,4 @@ fun Dp.toPx(): Float {
 
 
 
-
-
-/*
-@Composable
-fun SampleLineGraph(
-    timeStamps: List<Long>,
-    linePlotLines: List<LinePlot.Line>,
-    modifier: Modifier = Modifier,
-    onSelection: (Float, List<DataPoint>) -> Unit = { _, _ -> }
-) {
-    val xLabels = timestampsToDate(timeStamps)
-    //getXAxisLabels(linePlotLines.flatMap { it.dataPoints })
-    var selectedSMAValue by remember { mutableStateOf<Float?>(null) }
-    var selectedIndex by remember { mutableStateOf<Int?>(null) }
-    LazyColumn {
-        item {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Column {
-                    Box(modifier = modifier.height(300.dp)) {
-                        Canvas(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            drawIntoCanvas {
-                                val canvas = it.nativeCanvas
-                                // Draw Y-axis labels
-                                val yAxisLabels = linePlotLines.flatMap { it.dataPoints.map { dataPoint -> dataPoint.y } }.distinct()
-                                val yAxisLabelPositions = yAxisLabels.map { yLabel ->
-                                    val yPosition = size.height - ((yLabel - linePlotLines.minOf { line -> line.dataPoints.minOf { it.y } }) / (linePlotLines.maxOf { line -> line.dataPoints.maxOf { it.y } } - linePlotLines.minOf { line -> line.dataPoints.minOf { it.y } })) * size.height
-                                    yPosition to yLabel
-                                }
-                                yAxisLabelPositions.forEach { (yPosition, yLabel) ->
-                                    canvas.drawText("$yLabel", 0f, yPosition, Paint().apply {
-                                        color = Color.Black.toArgb()
-                                        textSize = 20f // Customize text size as needed
-                                        textAlign = Paint.Align.RIGHT
-                                    })
-                                }
-                                // Draw X-axis labels
-                                val xAxisLabelPositions = xLabels.mapIndexed { index, xLabel ->
-                                    val xPosition = (index + 1) * (size.width / (xLabels.size + 1))
-                                    xPosition.toFloat() to xLabel
-                                }
-                                xAxisLabelPositions.forEach { (xPosition, xLabel) ->
-                                    canvas.drawText(xLabel, xPosition, size.height, Paint().apply {
-                                        color = Color.Black.toArgb()
-                                        textSize = 20f // Customize text size as needed
-                                        textAlign = Paint.Align.CENTER
-                                    })
-                                }
-                                linePlotLines.forEach { line ->
-                                    val points = line.dataPoints
-                                    val paint = Paint().apply {
-                                        color = line.connection?.color?.toArgb()
-                                            ?: Color.Black.toArgb()
-
-                                        strokeWidth = 2.dp.toPx()
-                                        isAntiAlias = true
-                                    }
-
-                                    val pointPaint = Paint().apply {
-                                        color = line.connection?.color?.toArgb()
-                                            ?: Color.Black.toArgb()
-
-                                        isAntiAlias = true
-                                    }
-
-                                    // Draw lines and data points
-                                    points.forEachIndexed { index, point ->
-                                        val x = ((point.x - points.first().x) / (points.last().x - points.first().x)) * size.width
-                                        val y = size.height - ((point.y - linePlotLines.minOf { it.dataPoints.minOf { it.y } }) / (linePlotLines.maxOf { it.dataPoints.maxOf { it.y } } - linePlotLines.minOf { it.dataPoints.minOf { it.y } })) * size.height
-
-                                        // Draw data point
-                                        canvas.drawCircle(x, y, 5.dp.toPx(), pointPaint)
-
-                                        // Draw line connecting data points
-                                        if (index > 0) {
-                                            val startX = ((points[index - 1].x - points.first().x) / (points.last().x - points.first().x)) * size.width
-                                            val startY = size.height - ((points[index - 1].y - linePlotLines.minOf { it.dataPoints.minOf { it.y } }) / (linePlotLines.maxOf { it.dataPoints.maxOf { it.y } } - linePlotLines.minOf { it.dataPoints.minOf { it.y } })) * size.height
-                                            canvas.drawLine(startX, startY, x, y, paint)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        selectedIndex?.let { index ->
-                            selectedSMAValue?.let { smaValue ->
-                                Text(
-                                    text = "SMA: $smaValue",
-                                    modifier = Modifier
-                                        .align(Alignment.TopStart)
-                                        .padding(16.dp),
-                                    color = Color.Black
-                                )
-                            }
-                        }
-
-                }
-            }
-        }
-    }
-}
-    val handleSelection: (Float, List<DataPoint>) -> Unit = { x, dataPoints ->
-        // Calculate index of the closest data point to the selected X-coordinate
-        val index = dataPoints.indexOfFirst { it.x == x }
-
-        // Set selected index
-        selectedIndex = index
-
-        // Retrieve SMA value for the selected index
-        selectedSMAValue = if (index != -1) {
-            linePlotLines.firstOrNull()?.dataPoints?.get(index)?.y // Assuming only one line plot
-        } else {
-            null
-        }
-
-        // Callback function
-        onSelection(x, dataPoints)
-    }
-  //  onSelection(handleSelection)
-
-    // Call the actual onSelection function with the modified handleSelection
-}
-
-
-*/
 

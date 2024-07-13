@@ -105,7 +105,7 @@ object Constans {
                 painter = painter,
                 contentDescription = null, // Content description is optional
                 modifier = modifier,
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.FillHeight
             )
         }
     }

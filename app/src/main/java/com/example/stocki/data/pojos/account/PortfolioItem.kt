@@ -12,9 +12,9 @@ data class PortfolioItem (
 
 @Parcelize
 data class userTransaction(
-    val type: String, // "buy" or "sell"
-    val ticker: String,
-    val quantity: Int,
-    val price: Double,
-    val timestamp: Long
+    val type: String = "", // "buy" or "sell"
+    val ticker: String ="",
+    val quantity: Int = 1,
+    val price: Double = 0.0,
+    val timestamp: Long =0
 ) : Parcelable

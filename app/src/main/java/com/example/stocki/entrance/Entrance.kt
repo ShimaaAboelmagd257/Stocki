@@ -86,7 +86,7 @@ import com.example.stocki.account.signup.SignupViewModel
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black)
                 ) {
 
-                    Text(text = "Sign Up" ,
+                    Text(text = "Get started" ,
                         color = Color.White)
 
                 }

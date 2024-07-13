@@ -34,7 +34,6 @@ import javax.inject.Inject
 @HiltViewModel
 class EmaViewModel @Inject constructor(val emaUsecase: EmaUsecase)  : ViewModel() {
 
-
     private val _state = MutableStateFlow<EmaState>(EmaState.Loading)
     val state: StateFlow<EmaState> = _state
     fun fetchData(stockTicker: String ) {

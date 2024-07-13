@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.example.stocki.NavigationRoute
 import com.example.stocki.R
-
+import kotlin.collections.listOf
 @Composable
 fun getCardContentList(): List<CardContent> {
     return listOf(

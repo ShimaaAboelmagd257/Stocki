@@ -112,17 +112,17 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
 
     suspend fun getGroupedDailyBars(date: String): List<AggregateData> {
         return  withContext(Dispatchers.IO) {
-            val localdata = localSource.getAllTickersLocal()
-            if (localdata.isNotEmpty()){
+         /*   val localdata = localSource.getAllTickersLocal()
+            if (localdata.isNotEmpty()) {
+                Log.d("StockiRepo", "getGroupedDailyBars  Locally")
                 localdata
-                Log.d("StockiRepo", "getGroupedDailyBars  Locally" )
-            }
-            val response = remoteSource.getGroupedDailyBars(date)
-            localSource.insertMarketLocal(response)
-            Log.d("StockiRepo", "getGroupedDailyBars  ${date}" )
-            remoteSource.getGroupedDailyBars(date)
+            } else {*/
+                val response = remoteSource.getGroupedDailyBars(date)
+                localSource.insertMarketLocal(response)
+                Log.d("StockiRepo", "getGroupedDailyBars  ${date}")
+                response
+          //  }
         }
-
     }
 
     suspend fun getDailyOpenClosePrices(

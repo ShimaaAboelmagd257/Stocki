@@ -1,13 +1,18 @@
 package com.example.stocki.settings
 
 import android.util.Pair
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,8 +24,8 @@ fun CustomCard(
     content : @Composable () -> Unit
 ) {
     Card(
-        modifier = modifier.padding(8.dp),
-        elevation = 4.dp,
+        modifier = modifier.padding(7.dp),
+        elevation = 7.dp,
         shape = MaterialTheme.shapes.medium
     ){
         content()
@@ -74,18 +79,27 @@ fun VerticalAlignedGrid(
 }
 
 @Composable
-fun CardGrid(cards: List<Triple<String, Int,String>>, columns: Int ,onItemClick: (String) -> Unit) {
-    VerticalAlignedGrid(columns = columns, modifier = Modifier.padding(16.dp)) {
+fun CardGrid(cards: List<CardContent>, columns: Int ,onItemClick: (String) -> Unit) {
+    val scrollState = rememberScrollState()
+    VerticalAlignedGrid(columns = columns, modifier = Modifier.verticalScroll(scrollState).padding(0.dp)) {
         cards.forEach { card ->
             CustomCard(
-                modifier = Modifier.height(card.second.dp).clickable {
-                    onItemClick(card.third)
-                }
-
-
+                modifier = Modifier
+                    .height(card.size)
+                    .clickable {
+                    onItemClick(card.route)
+                    }
             ) {
-                Box(Modifier.fillMaxSize().padding(16.dp)) {
-                 Text(text = card.first)
+                Box(Modifier.fillMaxSize().padding(0.dp)) {
+                    Image(
+                        painter = card.image,
+                        contentDescription = null,
+                        modifier = Modifier
+                             .fillMaxSize().height(card.size)
+                            .clip(RoundedCornerShape(topStart = 15.dp, topEnd = 5.dp)),
+                        contentScale = ContentScale.FillBounds
+                    )
+
                 }
             }
         }

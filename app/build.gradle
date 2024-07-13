@@ -62,9 +62,9 @@ android {
 
 dependencies {
 
-
+// pager
     implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    //implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
@@ -116,9 +116,10 @@ dependencies {
 
 
     // Paging Compose
-    implementation "com.google.accompanist:accompanist-pager:0.13.0"
-    implementation "com.google.accompanist:accompanist-pager-indicators:0.13.0"
-    implementation "com.google.accompanist:accompanist-flowlayout:0.13.0"
+    implementation "com.google.accompanist:accompanist-pager:0.25.0"
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.25.0"
+    implementation "com.google.accompanist:accompanist-flowlayout:0.25.0"
+
     //NAVIGATION
     def nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
