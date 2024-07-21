@@ -2,7 +2,7 @@ package com.example.stocki.feeds
 
 import android.util.Log
 import com.example.stocki.data.repository.Repository
-import com.example.stocki.utility.Constans.CACHE_EXPIRY_TIME
+import com.example.stocki.utility.Constans.CACHE_EXPIRY_TIME_HOUR
 import com.example.stocki.utility.Constans.currentTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,7 +14,7 @@ class FeedsUseCase @Inject constructor( val repository: Repository) {
         return withContext(Dispatchers.IO) {
             val localSource = repository.getAllNews()
             val lastFetchTime = localSource.maxOfOrNull { it.fetched_at } ?: 0
-            if (localSource.isNotEmpty() && currentTime - lastFetchTime < CACHE_EXPIRY_TIME) {
+            if (localSource.isNotEmpty() && currentTime - lastFetchTime < CACHE_EXPIRY_TIME_HOUR) {
                 Log.d("stockiFeedsUseCase", "localData  ${localSource.size}")
                 FeedStates.Data(localSource)
             }else {

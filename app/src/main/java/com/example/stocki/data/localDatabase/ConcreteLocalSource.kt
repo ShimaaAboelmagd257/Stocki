@@ -10,12 +10,14 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
     private val watchListDao:WatchListDao by lazy {
         stockiDatabase.WatchListDao()
     }
+/*
     private val tickerDAO:TickerDAO by lazy {
         stockiDatabase.TickerDAO()
     }
-    private val tickerLogoDAO: TickerLogoDAO by lazy {
+*/
+   /* private val tickerLogoDAO: TickerLogoDAO by lazy {
         stockiDatabase.TickerLogoDAO()
-    }
+    }*/
     private val newsLocalDAO:newsLocalDAO by lazy {
         stockiDatabase.newsLocalDao()
     }
@@ -39,27 +41,33 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
 
     }
 
-   override fun getgetAllTickerTypes(/*market: String*/): List<TickerTypes>{
-        return tickerDAO.getAllTickerTypes(/*market*/)
+/*
+   override fun getgetAllTickerTypes(*/
+/*market: String*//*
+): List<TickerTypes>{
+        return tickerDAO.getAllTickerTypes(*/
+/*market*//*
+)
     }
 
     override  suspend fun insertTypes(tickerTypes: List<TickerTypes>){
         tickerDAO.insertTypes(tickerTypes)
     }
+*/
 
-    override fun getAllWatchLists(): List<AggregateData> {
+    override suspend fun getAllWatchLists(): List<WatchList> {
         return watchListDao.getAllWatchLists()
     }
 
-    override suspend fun insertTicker(types: AggregateData) {
+    override suspend fun insertTicker(types: WatchList) {
          watchListDao.insertTicker(types)
     }
 
-    override fun deleteTicker(ticker:AggregateData) {
+    override suspend fun deleteTicker(ticker:WatchList) {
         watchListDao.deleteTicker(ticker)
     }
 
-    override fun getTickerById(T: String): AggregateData {
+    override  suspend fun getTickerById(T: String): WatchList {
         return watchListDao.getTickerById(T)
     }
 
@@ -67,12 +75,16 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
         marketDAO.insertMarketLocal(aggregateData)
     }
 
-    override fun getAllTickersLocal(): List<AggregateData> {
+    override suspend fun getAllTickersLocal(): List<AggregateData> {
         return marketDAO.getAllTickersLocal()
     }
 
     override fun getTickerItemById(T: String): AggregateData {
          return marketDAO.getTickerItemById(T)
+    }
+
+    override fun deleteMarketLocal(expiryTime: Long) {
+        marketDAO.deleteMarketLocal(expiryTime)
     }
 
     /* override fun getAllTickerInfo(): List<Company> {
@@ -81,7 +93,7 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
 
      override suspend fun insertTickerInfo(company: List<Company>) {
        tickerInfoDAO.insertTickerInfo(company)    }*/
-    override fun getAllTickerLogo(): List<BrandingSaved> {
+   /* override fun getAllTickerLogo(): List<BrandingSaved> {
        return tickerLogoDAO.getAllTickerLogo()
     }
 
@@ -92,7 +104,7 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
 
     override fun getTickerLogo(ticker: String): BrandingSaved {
      return   tickerLogoDAO.getTickerLogo(ticker)
-    }
+    }*/
 
     override suspend fun insertNews(newsLocal: List<NewsItem>) {
         newsLocalDAO.insertNewsLocal(newsLocal)
@@ -104,6 +116,10 @@ class ConcreteLocalSource @Inject constructor(context: Context):localSource {
 
     override fun getNewsItemById(id: String): NewsItem {
         return  newsLocalDAO.getNewsItemById(id)
+    }
+
+    override fun deleteOldNews(newsItems: List<NewsItem>) {
+        newsLocalDAO.deleteOldNews(newsItems)
     }
 
 

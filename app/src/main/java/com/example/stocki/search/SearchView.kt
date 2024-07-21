@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.ui.Modifier
@@ -14,17 +15,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.stocki.data.pojos.TickerTypes
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: () -> Unit ){
 
@@ -34,62 +32,9 @@ fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: ()
     LaunchedEffect(Unit) {
         viewmodel.fetchData(titleList)
         Log.d("StockiSearch", "LaunchedEffect ")
-
     }
 
-    var selectedTab by remember { mutableStateOf("otc") }
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
-    val selectedTabIndex = when (selectedTab) {
-        "stocks" -> 0
-        "crypto" -> 1
-        "fx" -> 2
-        "otc" -> 3
-        "indices" -> 4
-        else -> 0
-    }
-    Column(
-        modifier = Modifier.fillMaxSize()
-
-    ){
-        TopAppBar(
-            backgroundColor = Color.Transparent,
-            elevation = 0.dp
-        ) {
-            TabRow(
-                selectedTabIndex =// pagerState.currentPage
-                when {
-                 //   isSearching -> -1 // No tab selected when searching
-                    else -> when (selectedTab) {
-                        "stocks" -> 0
-                        "crypto" -> 1
-                        "fx" -> 2
-                        "otc" -> 3
-                        "indices" -> 4
-                        else -> 0
-                    }
-                },
-                contentColor = Color.Black
-            ) {
-                titleList.forEachIndexed { index, text ->
-                    Tab(
-                        selected =pagerState.currentPage == index,
-                        onClick = {
-                        scope.launch{
-                            pagerState.scrollToPage(index)
-                        }
-                            selectedTab = titleList[index]
-                         },
-                        text = { Text(text = text,modifier = Modifier
-                            .fillMaxWidth()) }
-                    )
-                }
-
-
-            }
-        }
-    }
-
+    //var selectedTab by remember { mutableStateOf("otc") }
 
     when (val searchState = state) {
         is SearchState.Loading -> {
@@ -97,20 +42,12 @@ fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: ()
         }
 
         is SearchState.Data -> {
-            val filteredData = searchState.data?.filter {
-                it.market.equals(selectedTab, ignoreCase = true)
-
-
+                TickerListScreen(
+                    tickers = searchState.data?: emptyList() ,
+                    titleList = titleList,
+                    onSearchRequested = onSearchRequested
+                )
             }
-            if (filteredData.isNullOrEmpty()) {
-                Text("No data available", modifier = Modifier.padding(16.dp))
-            } else {
-                TickerListScreen(tickers = filteredData , onSearchRequested = onSearchRequested )
-            }
-
-        }
-
-
 
         is SearchState.Error -> {
             Text(
@@ -129,57 +66,106 @@ fun search(viewmodel: SearchViewmodel = hiltViewModel() ,  onSearchRequested: ()
 
 }
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TickerListScreen(tickers: List<TickerTypes> ,  onSearchRequested: () -> Unit) {
+fun TickerListScreen(
+    tickers: List<TickerTypes> ,
+    titleList: List<String>,
+    onSearchRequested: () -> Unit) {
+    val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
+
     val AppBarHeight = 56.dp
     Log.d("StockiSearch", "filteredData ${tickers.size} ")
+    Column(
+        modifier = Modifier.fillMaxSize()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.height(150.dp))
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = AppBarHeight)
-        ){
-            items(tickers.size) { index ->
-                val ticker = tickers[index]
-                Card(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxWidth()
-                        .clickable {
-
+    ) {
+        TopAppBar(
+            backgroundColor = Color.Transparent,
+            elevation = 0.dp
+        ) {
+            TabRow(
+                selectedTabIndex = pagerState.currentPage,
+                modifier = Modifier.background(androidx.compose.material3.MaterialTheme.colorScheme.surface),
+                backgroundColor = Color.Transparent
+            ) {
+                titleList.forEachIndexed { index, text ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.scrollToPage(index)
+                            }
+                            //selectedTab = titleList[index]
+                        },
+                        text = {
+                            Text(
+                                text = text, modifier = Modifier
+                                    .fillMaxWidth()
+                            )
                         }
-                ) {
-                    Column(
-                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+
+            }
+        }
+
+            HorizontalPager(state = pagerState, count = titleList.size) { page ->
+                val filteredTickers = tickers.filter {
+                    it.market.equals(titleList[page], ignoreCase = true)
+                }
+
+                if (filteredTickers.isNullOrEmpty()) {
+                    Text("No data available", modifier = Modifier.padding(16.dp))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
                     ) {
-                        Text("name: ${ticker.name}")
-                        Text("ticker: ${ticker.ticker}")
-                        Text("locale: ${ticker.locale}")
+                        items(filteredTickers) { ticker ->
+                            TickerCard(ticker = ticker)
+                        }
                     }
                 }
             }
-        }
-        IconButton(
-            onClick = { onSearchRequested() },
-            modifier = Modifier
-                .background(Color.Black, shape = CircleShape)
-                .align(Alignment.BottomEnd)
-                .padding(70.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Search,
-                contentDescription = null,
-                tint = Color.Blue,
-                modifier = Modifier.size(100.dp)
-            )
-        }
 
+        Box(modifier = Modifier.fillMaxSize()) {
+            IconButton(
+                onClick = { onSearchRequested() },
+                modifier = Modifier
+                    .background(Color.Black, shape = CircleShape)
+                    .align(Alignment.BottomEnd)
+                    .padding(70.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = null,
+                    tint = Color.Blue,
+                    modifier = Modifier.size(100.dp)
+                )
+            }
+
+        }
     }
 }
-@Preview
+@Composable
+fun TickerCard(ticker: TickerTypes) {
+    Card(
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+            .clickable { }
+    ) {
+        Column(modifier = Modifier.padding(10.dp)) {
+            Text("Name: ${ticker.name}")
+            Text("Ticker: ${ticker.ticker}")
+            Text("Locale: ${ticker.locale}")
+        }
+    }
+}
+
+/*@Preview
 @Composable
 fun PreviewTickerListScreen() {
     val sampleTickersList = listOf(
@@ -188,4 +174,4 @@ fun PreviewTickerListScreen() {
         TickerTypes(3, "Market 3", "Name 3", "Ticker 3", "Type 3", "Locale 3")
     )
     TickerListScreen(tickers = sampleTickersList, onSearchRequested = {})
-}
+}*/

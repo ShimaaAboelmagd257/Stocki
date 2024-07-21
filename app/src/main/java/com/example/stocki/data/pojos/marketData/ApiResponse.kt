@@ -58,6 +58,18 @@ data class AggregateData(
     val vw: Double  //Volume Weighted Average Price
 ): Parcelable
 
+@Entity(tableName = "WatchList")
+@Parcelize
+data class WatchList(
+    @PrimaryKey(autoGenerate = true)
+    val id:Long = 0,
+    val T: String, //ticker name
+    val c: Double, // Closing price
+    val h: Double, // High price
+    val l: Double,  // Low price
+   val absoluteChangeFormatted: Double,
+    val percentageChangeFormatted: Double
+): Parcelable
 
 
 

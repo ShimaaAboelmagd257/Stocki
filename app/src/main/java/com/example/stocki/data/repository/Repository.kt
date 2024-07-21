@@ -1,6 +1,7 @@
 package com.example.stocki.data.repository
 
 import android.util.Log
+import com.example.stocki.data.firebase.FirebaseManager
 import com.example.stocki.data.localDatabase.localSource
 import com.example.stocki.data.pojos.*
 import com.example.stocki.data.pojos.marketData.ExponintialMovingAverage
@@ -12,6 +13,8 @@ import com.example.stocki.data.pojos.refrenceData.DividendsResponse
 import com.example.stocki.data.pojos.refrenceData.Exchange
 import com.example.stocki.data.pojos.refrenceData.FinancialsResponse
 import com.example.stocki.data.remoteDatabase.RemoteSource
+import com.example.stocki.utility.Constans.CACHE_EXPIRY_TIME_DAY
+import com.example.stocki.utility.Constans.currentAdujestedTime
 import com.example.stocki.utility.Constans.currentTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -22,29 +25,50 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Repository @Inject constructor(private val remoteSource: RemoteSource , private val localSource: localSource) {
+class Repository @Inject constructor(private val remoteSource: RemoteSource , private val localSource: localSource , private val firebaseManager: FirebaseManager) {
 
- /*   fun getAllTickerInfo(): List<Company>{
-        return localSource.getAllTickerInfo()
-    }
-    suspend fun insertTickerInfo(company: List<Company>){
-        company.forEach { ticker ->
-            //  Log.d("StockiRepo", "insertTickerLogo: logoUrl = ${ticker.branding.logoUrl}, iconUrl = ${ticker.branding.iconUrl}")
+
+    suspend fun getTicker(market: String): List<TickerTypes>? {
+        val firebaseData = getTickerTypes(market)
+        if (!firebaseData.isNullOrEmpty()) {
+            Log.d("StockiRepo", "Data found in Firebase for market: $market")
+            return firebaseData
         }
-        localSource.insertTickerInfo(company)
+        Log.d("StockiRepo", "Fetching data from remote source for market: $market")
+        val remoteSourceResult = remoteSource.getTicker(market)
+        val tickerTypesList = remoteSourceResult.results.map { ticker ->
+            TickerTypes(
+                market = ticker.market,
+                name = ticker.name,
+                ticker = ticker.ticker,
+                type = ticker.type,
+                locale = ticker.locale
+            )
+        }
+        tickerTypesList.forEach { tickerType ->
+            insertTickerTypes(tickerType)
+        }
+        return tickerTypesList
+    }
 
-    }*/
-     suspend fun insertMarketLocal(aggregateData: List<AggregateData>){
+    suspend fun insertTickerTypes (tickerTypes: TickerTypes):Boolean{
+        return firebaseManager.insertTicKer(tickerTypes)
+    }
+    suspend fun getTickerTypes(market: String):List<TickerTypes>?{
+        return firebaseManager.getTickerTypes(market)
+    }
+
+    suspend fun insertMarketLocal(aggregateData: List<AggregateData>){
          localSource.insertMarketLocal(aggregateData)
      }
 
-    fun getAllTickersLocal(): List<AggregateData>{
+   suspend fun getAllTickersLocal(): List<AggregateData>{
         return localSource.getAllTickersLocal()
     }
     suspend fun getTickerItemById(T:String) : AggregateData{
         return withContext(Dispatchers.IO) { localSource.getTickerItemById(T)}
     }
-    suspend fun getTickerLogo(ticker : String): BrandingSaved? {
+ /*   suspend fun getTickerLogo(ticker : String): BrandingSaved? {
      return withContext(Dispatchers.IO) {
          localSource.getTickerLogo(ticker)
      }
@@ -62,18 +86,27 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
             localSource.insertTickerLogo(brandingSaved)
         }
 
-    } fun getAllWatchLists(): List<AggregateData>{
-        return localSource.getAllWatchLists()
+    } */
+
+    suspend fun getAllWatchLists(): List<WatchList>{
+        return  withContext(Dispatchers.IO) {
+            localSource.getAllWatchLists()
+        }
     }
-    suspend fun insertTicker(tickerTypes: AggregateData){
+    suspend fun insertTicker(tickerTypes: WatchList) {
+        withContext(Dispatchers.IO) {
         localSource.insertTicker(tickerTypes)
     }
-     fun getTickerById(T: String): AggregateData {
+    }
+    suspend fun getTickerById(T: String): WatchList {
          return localSource.getTickerById(T)
     }
-    fun deleteTicker(ticker : AggregateData){
-        localSource.deleteTicker(ticker)
+     suspend fun deleteTicker(ticker : WatchList){
+        withContext(Dispatchers.IO) {
+            localSource.deleteTicker(ticker)
+        }
     }
+/*
     fun getAllTickerTypes(): List<TickerTypes>{
         return localSource.getgetAllTickerTypes()
     }
@@ -84,20 +117,7 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
         localSource.insertTypes(tickerTypes)
 
     }
-    suspend fun getTicker(market: String):  List<TickerTypes>  {
-        Log.d("StockiRepo", "getTicker " )
-        val remoteSource = remoteSource.getTicker(market)
-        return remoteSource.results.map { ticker ->
-            TickerTypes(
-                market = ticker.market,
-                name = ticker.name,
-                ticker = ticker.ticker,
-                type = ticker.type,
-                locale = ticker.locale
-            )
-        }
-    }
-
+*/
     suspend fun getAggregateBars(
         stocksTicker: String,
         multiplier: Int,
@@ -113,16 +133,18 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
     suspend fun getGroupedDailyBars(date: String): List<AggregateData> {
         return  withContext(Dispatchers.IO) {
          /*   val localdata = localSource.getAllTickersLocal()
-            if (localdata.isNotEmpty()) {
+            val lastFetchTime = localdata.maxOfOrNull { it.t } ?: 0
+            if (localdata.isNotEmpty() && currentAdujestedTime - lastFetchTime < CACHE_EXPIRY_TIME_DAY) {
                 Log.d("StockiRepo", "getGroupedDailyBars  Locally")
                 localdata
             } else {*/
+                localSource.deleteMarketLocal(currentAdujestedTime - CACHE_EXPIRY_TIME_DAY)
                 val response = remoteSource.getGroupedDailyBars(date)
                 localSource.insertMarketLocal(response)
                 Log.d("StockiRepo", "getGroupedDailyBars  ${date}")
                 response
-          //  }
-        }
+      //  }
+    }
     }
 
     suspend fun getDailyOpenClosePrices(
@@ -171,6 +193,7 @@ class Repository @Inject constructor(private val remoteSource: RemoteSource , pr
        return localSource.getNews()
    }
     suspend fun fetchAndStoreTickerNews(): List<NewsItem> = withContext(Dispatchers.IO) {
+        /**/
         val response = remoteSource.getTickerNews().results
         val localNews = response.map {
             NewsItem(

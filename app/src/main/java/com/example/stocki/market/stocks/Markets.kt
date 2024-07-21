@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.stocki.R
 import com.example.stocki.data.pojos.AggregateData
+import com.example.stocki.utility.Constans.currentAdujestedTime
+import com.example.stocki.utility.Constans.timestampToDate
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -33,8 +35,10 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel(), onTickerClicked:
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchData("2024-06-27") // Fetch data automatically when the screen is displayed
-        Log.d("StockiMain", "getGroupedDailyBars ${viewModel.fetchData("2024-04-05")}")
+       // viewModel.fetchData("2024-06-27")
+        viewModel.fetchData(timestampToDate(currentAdujestedTime))
+    // Fetch data automatically when the screen is displayed
+      //  Log.d("StockiMain", "getGroupedDailyBars ${viewModel.fetchData("2024-04-05")}")
       //  viewModel.fetchTickerLogo()
 
     }
@@ -42,7 +46,7 @@ fun MarketsScreen(viewModel: MarketViewModel = hiltViewModel(), onTickerClicked:
         // Fetch ticker logos automatically when the screen is displayed
         val dataList = (state as? MarketState.Data)?.data ?: emptyList()
         val tickers = dataList.map { it.T }
-        viewModel.fetchTickerLogo(tickers)
+       // viewModel.fetchTickerLogo(tickers)
     }
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()

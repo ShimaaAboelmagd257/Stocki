@@ -7,27 +7,20 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.stocki.R
-import com.example.stocki.account.profile.ProfileViewmodel
 import com.example.stocki.data.pojos.AggregateData
 import com.example.stocki.data.pojos.Company
+import com.example.stocki.data.pojos.WatchList
 import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.utility.Constans
 import com.example.stocki.watchlists.WatchListViewModel
@@ -35,15 +28,21 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
-
-private val _toastMessage = MutableLiveData<String>()
-val toastMessage: LiveData<String> get() = _toastMessage
+fun aggregateDataToWatchList(aggregateData: AggregateData): WatchList {
+    return WatchList(
+        T = aggregateData.T,
+        c = aggregateData.c,
+        h = aggregateData.h,
+        l = aggregateData.l,
+        absoluteChangeFormatted = aggregateData.c - aggregateData.o,  // Example calculation
+        percentageChangeFormatted = ((aggregateData.c - aggregateData.o) / aggregateData.o) * 100  // Example calculation
+    )
+}
 @Composable
  fun tickerInfoView(ticker: String,
                            viewModel: TickerInfoViewModel = hiltViewModel(),
-                    profileViewmodel: ProfileViewmodel = hiltViewModel(),
                            watchListViewModel: WatchListViewModel = hiltViewModel(),
-                           onTrading: () -> Unit,
+                           onTrading: (ticker:String,price:Double) -> Unit,
                            userId:String
 
 ) {
@@ -60,7 +59,7 @@ val toastMessage: LiveData<String> get() = _toastMessage
             val companies = tickerInfoState.companies
             val aggregate = tickerInfoState.aggregateData
             val scrollState = rememberScrollState()
-
+          //  val aggregateData = aggregate
             Column(modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFFF8FAFC))
@@ -69,7 +68,7 @@ val toastMessage: LiveData<String> get() = _toastMessage
                 TopAppBar(
                     title = {  },
                     actions = {
-                        IconButton(onClick = { watchListViewModel.insertData(aggregate)}) {
+                        IconButton(onClick = { watchListViewModel.insertData(aggregateDataToWatchList(aggregate))}) {
                             Icon(
                                 painter = painterResource(id = R.drawable.watchlistunselected),
                                 contentDescription = "Search",
@@ -81,23 +80,17 @@ val toastMessage: LiveData<String> get() = _toastMessage
                     elevation = 0.dp)
                 AggregateTickerData(
                     aggregate = aggregate,
-                    viewModel = viewModel,
-                    userId = userId,
-                    onTrading =onTrading,
-                    watchListViewModel = watchListViewModel,
-                    profileViewmodel
                 )
                 TickerInfo(company =companies, aggregate=aggregate,viewModel = viewModel,
                     userId = userId,
-                    onTrading =onTrading,
+                    onTrading ={ onTrading(ticker,aggregate.c) },
                 )
             }
 
         }
-
         is TickerInfoState.Error -> {
             Log.d("StockitickerInfoState", "tickerInfoState  ${tickerInfoState.error}")
-            Text(tickerInfoState.error, modifier = Modifier.padding(150.dp , 300.dp))
+            Text(tickerInfoState.error, modifier = Modifier.padding(200.dp , 300.dp))
         }
 
     }
@@ -121,18 +114,10 @@ fun CardItem(title:String,price:Double) {
         }
     }
 }
-/*
-    val n: Int,   // Number of items in the bar
-    val v: Double,    // Volume
-    val vw: Double  //Volume Weighted Average Price
-*/
 @Composable
-fun AggregateTickerData (aggregate: AggregateData,
-                         viewModel: TickerInfoViewModel,
-                         userId: String,
-                         onTrading: () -> Unit,
-                         watchListViewModel: WatchListViewModel,
-profileViewmodel: ProfileViewmodel) {
+fun AggregateTickerData (
+    aggregate: AggregateData
+){
     val items = listOf(
         "High price" to aggregate.h,
         "Low price" to aggregate.l,
@@ -163,21 +148,12 @@ profileViewmodel: ProfileViewmodel) {
                 color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer
             )
 
-            /*Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                "Closing Price: ${aggregate.c}", style = MaterialTheme.typography.body1,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Text(
-                "High Price: ${aggregate.h}", style = MaterialTheme.typography.body1,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.onPrimaryContainer
-            )
-            Text("Low Price: ${aggregate.l}", color = Color.Red)*/
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
     Text(text = "Key Statistics")
     Spacer(modifier = Modifier.height(16.dp))
+
     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ){
@@ -201,21 +177,31 @@ fun TickerInfo(company: List<Company>,    aggregate: AggregateData, viewModel: T
 
    // val scrollState = rememberScrollState()
     company?.forEach { company->
-    Constans.LoadNetworkSvgImage(
-        url = "${company.branding.logo_url}?apiKey=${Constans.Api_Key}",
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .clip(RoundedCornerShape(8.dp))
-    )
-        Constans.LoadNetworkImage(
-            url ="${company.branding.icon_url}?apiKey=${Constans.Api_Key}",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .clip(RoundedCornerShape(8.dp)).background(Color.Black)
+        val branding = company.branding
+        val logoUrl = branding?.logo_url
+        val iconUrl = branding?.icon_url
+        if (logoUrl != null) {
+            Constans.LoadSvgImageWithFallback(
+                imageUrl = "$logoUrl?apiKey=${Constans.Api_Key}",
+                fallbackImage = painterResource(id = R.drawable.bussniss),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+        }
 
-        )
+        if (iconUrl != null) {
+            Constans.LoadpngImageWithFallback(
+                imageUrl = "$iconUrl?apiKey=${Constans.Api_Key}",
+                fallbackImage = painterResource(id = R.drawable.check),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Black)
+            )
+        }
 }
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -232,8 +218,6 @@ fun TickerInfo(company: List<Company>,    aggregate: AggregateData, viewModel: T
             onTrading()
         },colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF2593F4)), modifier = Modifier.width(120.dp)) {
             Text(text = "Buy")
-            _toastMessage.postValue("congratulations! you just buy a stock")
-
         }
         Button(onClick = {
             viewModel.sellStock(
@@ -246,8 +230,6 @@ fun TickerInfo(company: List<Company>,    aggregate: AggregateData, viewModel: T
         } , colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE7EEF4)), modifier = Modifier.width(120.dp)
         ) {
             Text(text = "Sell")
-            _toastMessage.postValue(" you just sell a stock")
-
         }
 
     }
@@ -277,7 +259,6 @@ fun TickerInfo(company: List<Company>,    aggregate: AggregateData, viewModel: T
         }
     }
     company?.forEach { company ->
-      //  LazyColumn(Modifier.verticalScroll(scrollState)) {
         HorizontalPager(state = pagerState, count = 4) { page ->
             when (page) {
                 0 -> GeneralDetails(company)
@@ -287,19 +268,19 @@ fun TickerInfo(company: List<Company>,    aggregate: AggregateData, viewModel: T
 
             }
         }
-    //}
+
 }
 }
     @Composable
     fun GeneralDetails(company: Company) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = "Company Name: ${company.name}", fontWeight = FontWeight.Bold)
-            Text(text = "Ticker: ${company.ticker}")
             Text(text = "Market: ${company.market}")
             Text(text = "Locale: ${company.locale}")
             Text(text = "Primary Exchange: ${company.primary_exchange}")
             Text(text = "Type: ${company.type}")
-            Text(text = "Active: ${company.active}")
+            Text(text = "Ticker: ${company.ticker}")
+                 Text(text = "Active: ${company.active}")
             Text(text = "Currency Name: ${company.currency_name}")
             Text(text = "CIK: ${company.cik}")
             Text(text = "Ticker Root: ${company.ticker_root}")
@@ -332,7 +313,6 @@ fun TickerInfo(company: List<Company>,    aggregate: AggregateData, viewModel: T
             Text(text = "SIC Code: ${company.sic_code}")
             Text(text = "SIC Description: ${company.sic_description}")
             Text(text = "List Date: ${company.list_date ?: "Not available"}")
-           // Text(text = "Branding: ${company.branding}")
             Text(text = "Composite FIGI: ${company.composite_figi}")
             Text(text = "Share Class FIGI: ${company.share_class_figi}")
             Text(text = "Total Employees: ${company.total_employees}")

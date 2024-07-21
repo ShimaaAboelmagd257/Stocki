@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.stocki.data.pojos.AggregateData
 import com.example.stocki.data.pojos.TickerTypes
+import com.example.stocki.data.pojos.WatchList
 import java.util.Collections.emptyList
 
 
@@ -56,7 +57,7 @@ fun  WatchListView(viewModel: WatchListViewModel = hiltViewModel() , onInsertCli
 }
 
 @Composable
-fun WatchList(tickers: List<AggregateData>, onInsertClicked: () -> Unit, onRemoveClicked: (AggregateData) -> Unit ) {
+fun WatchList(tickers: List<WatchList>, onInsertClicked: () -> Unit, onRemoveClicked: (WatchList) -> Unit ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(150.dp))
 
@@ -74,15 +75,12 @@ fun WatchList(tickers: List<AggregateData>, onInsertClicked: () -> Unit, onRemov
 
                         }
                 ) {
-                    Column(
-                        modifier = Modifier.padding(10.dp)
-                    ) {
                         Text("name: ${ticker.T}")
                         Text("low price: ${ticker.l}")
                         Text("high price: ${ticker.h}")
                         IconButton(
                             onClick = { onRemoveClicked(ticker) },
-                            modifier = Modifier.background(Color.Magenta , shape = CircleShape)
+                            modifier = Modifier
                                 .padding(30.dp)
                         ) {
                             Icon(
@@ -92,7 +90,7 @@ fun WatchList(tickers: List<AggregateData>, onInsertClicked: () -> Unit, onRemov
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-                    }
+
                 }
             }
         }
@@ -106,7 +104,7 @@ fun WatchList(tickers: List<AggregateData>, onInsertClicked: () -> Unit, onRemov
                 imageVector = Icons.Outlined.Add,
                 contentDescription = null,
                 tint = Color.Blue,
-                modifier = Modifier.size(50.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
 

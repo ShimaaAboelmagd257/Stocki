@@ -12,14 +12,13 @@ class MarketUseCase @Inject constructor(private val repository: Repository) {
         return withContext(Dispatchers.IO) {
             val data = repository.getGroupedDailyBars(date)
             MarketState.Data(data)
-
         }
     }
 
-    suspend  fun getTickerLogo( ticker:String): BrandingSaved? {
+    /*suspend  fun getTickerLogo( ticker:String): BrandingSaved? {
         return withContext(Dispatchers.IO) {
             val data = repository.getTickerLogo(ticker)
             data
         }
-    }
+    }*/
 }

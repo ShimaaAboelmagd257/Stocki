@@ -25,6 +25,7 @@ class SearchViewmodel @Inject constructor(val searchUsecase: SearchUsecase )  : 
             }
         }
 
+/*
 fun fetchAllData() {
     viewModelScope.launch {
         _state.value = SearchState.Loading
@@ -36,6 +37,7 @@ fun fetchAllData() {
         }
     }
 }
+*/
 }
 
 

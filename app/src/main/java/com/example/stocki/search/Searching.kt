@@ -10,14 +10,14 @@ import androidx.compose.runtime.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.stocki.data.pojos.TickerTypes
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.material3.SearchBar
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -35,9 +35,8 @@ fun Searching( viewmodel: SearchViewmodel = hiltViewModel() ) {
 
 
     LaunchedEffect(searchTextChange) {
-        // Fetch data only if searchTextChange is not empty
         if (searchTextChange.isNotEmpty()) {
-            viewmodel.fetchAllData()
+          //  viewmodel.fetchAllData()
         }
     }
     when (val searchState = state) {
@@ -48,9 +47,9 @@ fun Searching( viewmodel: SearchViewmodel = hiltViewModel() ) {
         is SearchState.Data -> {
 
 
-             filteredData = searchState.data?.filter  { tickerList ->
+           /*  filteredData = searchState.data?.filter  { tickerList ->
                      tickerList.name?.contains(searchTextChange, ignoreCase = true) == true
-                 } ?: emptyList()
+                 } ?: emptyList()*/
 
             Log.d("StockiSearch", "SearchState filteredData ${filteredData}")
 
@@ -108,7 +107,8 @@ fun Searching( viewmodel: SearchViewmodel = hiltViewModel() ) {
                         onValueChange = { searchTextChange = it },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text("Search") }
-                    )*/}
+                    )*/
+                }
 
             )
             /*LazyColumn {

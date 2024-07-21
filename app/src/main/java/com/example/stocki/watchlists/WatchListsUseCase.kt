@@ -2,6 +2,7 @@ package com.example.stocki.watchlists
 
 import com.example.stocki.data.pojos.AggregateData
 import com.example.stocki.data.pojos.TickerTypes
+import com.example.stocki.data.pojos.WatchList
 import com.example.stocki.data.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,10 +22,10 @@ class WatchListsUseCase @Inject constructor(val repository: Repository) {
 
 
     }
-    fun deleteWatchTicker(ticker : AggregateData){
+    suspend fun deleteWatchTicker(ticker : WatchList){
         repository.deleteTicker(ticker)
     }
-    suspend  fun insertWatchList(watchList : AggregateData){
+    suspend  fun insertWatchList(watchList : WatchList){
         return withContext(Dispatchers.IO) {
             try {
                 repository.insertTicker(watchList)

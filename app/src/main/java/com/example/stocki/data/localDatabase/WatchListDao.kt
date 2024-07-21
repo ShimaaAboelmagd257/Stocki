@@ -3,20 +3,20 @@ package com.example.stocki.data.localDatabase
 import androidx.room.*
 import com.example.stocki.data.pojos.AggregateData
 import com.example.stocki.data.pojos.TickerTypes
+import com.example.stocki.data.pojos.WatchList
 
 
 @Dao
 interface WatchListDao {
-
-    @Query("SELECT * FROM AggregateData")
-    fun getAllWatchLists(): List<AggregateData>
+    @Query("SELECT * FROM WatchList")
+    suspend fun getAllWatchLists(): List<WatchList>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTicker(types: AggregateData)
+    suspend fun insertTicker(types: WatchList)
 
-    @Query("SELECT * FROM AggregateData WHERE T = :T")
-    fun getTickerById(T:String) : AggregateData
+    @Query("SELECT * FROM WatchList WHERE T = :T")
+   suspend fun getTickerById(T:String) : WatchList
     @Delete
-    fun deleteTicker(ticker : AggregateData)
+   suspend fun deleteTicker(ticker : WatchList)
 }
 

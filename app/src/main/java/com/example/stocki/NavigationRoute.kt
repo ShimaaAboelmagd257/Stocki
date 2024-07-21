@@ -10,6 +10,7 @@ sealed class NavigationRoute(val route: String) {
     object  FeedsList :NavigationRoute("feedsList")
     object Profile:NavigationRoute("profile")
     object Portfolio:NavigationRoute("portfolio")
+    object Transaction:NavigationRoute("transaction")
 
 
     object EXplore:NavigationRoute("explore")
@@ -29,6 +30,7 @@ sealed class NavigationRoute(val route: String) {
     object MarketDailyOC:NavigationRoute("marketOc")
     object MarketExchange:NavigationRoute("marketExchange")
     object MarketDividends:NavigationRoute("marketDividends")
+    object About:NavigationRoute("about")
 
 
     object TickerSMA : NavigationRoute("sma")

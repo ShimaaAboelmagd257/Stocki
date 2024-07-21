@@ -50,8 +50,10 @@ fun HolidaysView(viewModel: HolidaysViewModel = hiltViewModel()){
                             Text("Exchange: ${holidays.exchange}")
                             Text("Name: ${holidays.name}")
                             Text("Status: ${holidays.status}")
+/*
                             Text("Open: ${holidays.open}")
                             Text("Closed: ${holidays.close}")
+*/
                         }
                     }
                 }

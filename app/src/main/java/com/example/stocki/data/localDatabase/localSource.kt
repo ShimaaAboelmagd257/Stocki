@@ -5,14 +5,16 @@ import com.example.stocki.data.pojos.*
 interface localSource {
 
 
+/*
     fun getgetAllTickerTypes(): List<TickerTypes>
     suspend fun insertTypes(tickerTypes: List<TickerTypes>)
 
+*/
 
-    fun getAllWatchLists(): List<AggregateData>
-    suspend fun insertTicker(types: AggregateData)
-    fun deleteTicker(ticker : AggregateData)
-    fun getTickerById(T:String) : AggregateData
+    suspend fun getAllWatchLists(): List<WatchList>
+    suspend fun insertTicker(types: WatchList)
+    suspend  fun deleteTicker(ticker : WatchList)
+    suspend  fun getTickerById(T:String) : WatchList
 
 
 
@@ -22,14 +24,17 @@ interface localSource {
     suspend fun insertTickerInfo(brandingSaved: List<Company>)
 */
     suspend fun insertMarketLocal(aggregateData: List<AggregateData>)
-    fun getAllTickersLocal(): List<AggregateData>
+    suspend fun getAllTickersLocal(): List<AggregateData>
     fun getTickerItemById(T:String) : AggregateData
+    fun deleteMarketLocal(expiryTime: Long)
 
-    fun getAllTickerLogo(): List<BrandingSaved>
+  /*  fun getAllTickerLogo(): List<BrandingSaved>
     suspend fun insertTickerLogo(brandingSaved: List<BrandingSaved>)
-    fun getTickerLogo(ticker:String): BrandingSaved
+    fun getTickerLogo(ticker:String): BrandingSaved*/
 
     suspend fun insertNews(newsLocal: List<NewsItem>)
     fun getNews(): List<NewsItem>
     fun getNewsItemById(id:String):NewsItem
+    fun deleteOldNews(newsItems: List<NewsItem>)
+
 }

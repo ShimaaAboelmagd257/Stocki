@@ -41,7 +41,7 @@ fun IntroItemView(introItem: IntroItem, pagerState: PagerState, totalItems: Int)
 
     Column(
         modifier = Modifier
-           .fillMaxSize()
+           //.height(450.dp)
            // .padding(16.dp),
       //  verticalArrangement = Arrangement.Center,
        // horizontalAlignment = Alignment.CenterHorizontally
@@ -62,8 +62,8 @@ fun IntroItemView(introItem: IntroItem, pagerState: PagerState, totalItems: Int)
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
+        //Spacer(modifier = Modifier.height(16.dp))
+        /*Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
@@ -71,14 +71,9 @@ fun IntroItemView(introItem: IntroItem, pagerState: PagerState, totalItems: Int)
             verticalAlignment = Alignment.Bottom
         ) {
             repeat(totalItems) { index ->
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .drawIndicator(pagerState, index)
-                        //.padding(4.dp)
-                )
+
             }
-        }
+        }*/
     }
 }
    // }
@@ -98,40 +93,49 @@ fun SplashScreen(introItems: List<IntroItem> ,onButtonClick:()->Unit) {
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+            // .weight(1f)
 
         ) { page ->
-            IntroItemView(introItem = introItems[page], pagerState = pagerState, totalItems = introItems.size)
+            IntroItemView(
+                introItem = introItems[page],
+                pagerState = pagerState,
+                totalItems = introItems.size
+            )
         }
-        Spacer(modifier = Modifier.height(40.dp))
-      //  introItems.forEachIndexed { index, _ ->
+        //    Spacer(modifier = Modifier.height(40.dp))
+        //  introItems.forEachIndexed { index, _ ->
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding( 16.dp),
-                  //  .align(Alignment.CenterHorizontally),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Bottom
-            ){
-               /* introItems.forEachIndexed { index, _ ->
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .drawIndicator(pagerState, index).padding(4.dp)
-                    )
-                }*/
-                Spacer(modifier = Modifier.height(16.dp))
-                if (pagerState.currentPage == introItems.size - 1) {
-                    Button(
-                        onClick = { onButtonClick() },
-                        modifier = Modifier
-                            .padding(bottom = 16.dp).fillMaxWidth()
-                    ) {
-                        Text("Get Started")
-                    }
+        Row(
+            modifier = Modifier
+                // .fillMaxWidth()
+                .fillMaxSize()
+                .padding(vertical = 16.dp),
+            //  .align(Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.Center,
+            // verticalAlignment = Alignment.
+        ) {
+            introItems.forEachIndexed { index, _ ->
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .drawIndicator(pagerState, index)
+                        .padding(0.dp)
+                )
+
+            if (pagerState.currentPage == introItems.size - 1) {
+
+                Button(
+                    onClick = { onButtonClick() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("Get Started")
                 }
             }
+        }
+
+    }
 
       //  }
 

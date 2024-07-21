@@ -13,13 +13,14 @@ data class CardContent (val title:String, val size : Dp, val image: Painter, val
 @Composable
 fun sampleData():List<CardContent>  {
     val sampleData = listOf(
-        CardContent("Stock Splits", 200.dp, painterResource(R.drawable.splitlogo), NavigationRoute.Splits.route),
-        CardContent("Stock Status", 250.dp , painterResource(R.drawable.statuslogo), NavigationRoute.MarketStatus.route),
-        CardContent("Daily OpenClose", 250.dp, painterResource(R.drawable.dologo), NavigationRoute.MarketDailyOC.route),
-        CardContent("Holidays", 150.dp, painterResource(R.drawable.holilogo), NavigationRoute.MarketHoliday.route),
-        CardContent("Exchange", 220.dp, painterResource(R.drawable.exchangelogo), NavigationRoute.MarketExchange.route),
+        CardContent("Stock Splits", 180.dp, painterResource(R.drawable.splitlogo), NavigationRoute.Splits.route),
+        CardContent("Stock Status", 180.dp , painterResource(R.drawable.statuslogo), NavigationRoute.MarketStatus.route),
+        CardContent("Daily OpenClose", 280.dp, painterResource(R.drawable.dologo), NavigationRoute.MarketDailyOC.route),
+        CardContent("Holidays", 200.dp, painterResource(R.drawable.holilogo), NavigationRoute.MarketHoliday.route),
+        CardContent("Exchange", 170.dp, painterResource(R.drawable.exchangelogo), NavigationRoute.MarketExchange.route),
+        CardContent("Profile", 250.dp, painterResource(R.drawable.proflog), NavigationRoute.Profile.route),
         CardContent("Dividends", 200.dp, painterResource(R.drawable.divlogo), NavigationRoute.MarketDividends.route),
-        CardContent("Profile", 210.dp, painterResource(R.drawable.proflog), NavigationRoute.Profile.route)
+        CardContent("About", 200.dp, painterResource(R.drawable.about), NavigationRoute.About.route),
 
 //#4C102A
     )

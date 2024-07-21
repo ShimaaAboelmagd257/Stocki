@@ -51,7 +51,9 @@ import com.example.stocki.utility.NetworkState
 import com.example.stocki.utility.NetworkViewModel
 import javax.inject.Inject
 import androidx.work.Configuration
+import com.example.stocki.about.AboutScreen
 import com.example.stocki.account.profile.ProfileView
+import com.example.stocki.account.profile.TransactionView
 import com.example.stocki.account.profile.UserPortfolio
 import com.example.stocki.feeds.NewsItemCard
 import com.example.stocki.holidays.HolidaysView
@@ -62,6 +64,7 @@ import com.example.stocki.search.search
 import com.example.stocki.settings.CardGrid
 import com.example.stocki.settings.sampleData
 import com.example.stocki.splash.introItem
+import com.example.stocki.watchlists.WatchListView
 
 
 @HiltAndroidApp
@@ -251,24 +254,43 @@ fun funi(userId:String) {
                         }
                         composable(searchTab.title) {
                           //  FeedsScreen()
-                         //   WatchListView(onInsertClicked = { navController.navigate(NavigationRoute.Searching.route)
-                          //  })
-                            search(onSearchRequested = { navController.navigate(NavigationRoute.Searching.route) })
+                            WatchListView(onInsertClicked = { navController.navigate(NavigationRoute.Searching.route)
+                            })
+                           // search(onSearchRequested = { navController.navigate(NavigationRoute.Searching.route) })
                         }
                         composable(moreTab.title) {
-                            // tickerView()
-                            // HolidaysView()
-                            //  MarketStatusView()
-                            //SplitsView()
-
                              CardGrid(cards = sampleData() , columns = 2 , onItemClick = { route ->
                                  navController.navigate(route)
                              })
 
                         }
+                        composable(NavigationRoute.About.route){
+                            AboutScreen()
+                        }
                         composable(NavigationRoute.Splits.route){
                             SplitsView()
                         }
+
+                            //  TransactionView(ticker = , userId = userId , price = )
+                            composable(
+                                route = "${NavigationRoute.Transaction.route}/{ticker}/{userId}/{price}",
+                                arguments = listOf(
+                                    navArgument("ticker") { type = NavType.StringType },
+                                    navArgument("price") { type = NavType.FloatType }
+                                )
+                            ) { backStackEntry ->
+                                val ticker = backStackEntry.arguments?.getString("ticker")
+                                val price = backStackEntry.arguments?.getFloat("price")
+
+                                if (ticker != null && userId != null && price != null) {
+                                    TransactionView(
+                                        ticker = ticker,
+                                        userId = userId,
+                                        price = price.toDouble()
+                                    )
+                                }
+                            }
+
 
                         composable(NavigationRoute.MarketHoliday.route){
                             HolidaysView()
@@ -381,8 +403,13 @@ fun funi(userId:String) {
                     ) { backStackEntry ->
                         val ticker = backStackEntry.arguments?.getString("ticker")
                         ticker?.let {
-                            val viewModel: TickerInfoViewModel = hiltViewModel()
-                            tickerInfoView(ticker, userId = userId,onTrading = { navController.navigate(NavigationRoute.Portfolio.route) })
+                            tickerInfoView(
+                                ticker,
+                                userId = userId,
+                                 onTrading = { ticker, price ->
+                                    navController.navigate("${NavigationRoute.Transaction.route}/$ticker/$userId/$price")
+                                }
+                            )
 
 
                         }

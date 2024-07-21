@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.example.stocki.account.signin.SigninState
+import com.example.stocki.data.pojos.TickerTypes
 import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.data.pojos.account.UserInfo
 import com.example.stocki.data.pojos.account.userTransaction
@@ -35,6 +36,8 @@ class FirebaseManager @Inject constructor( context: Context , val sharedPreferen
    // private val usersReference: DatabaseReference = database.reference.child("User")
     private val fireStore : FirebaseFirestore = FirebaseFirestore.getInstance()
     private val userCollection : CollectionReference = fireStore.collection("users")
+    private val typesCollection : CollectionReference = fireStore.collection("types")
+
     private val context: Context = context.applicationContext
    // private val sharedPreferences: SharedPreference = SharedPreferences()
    // private val intialBalance :Double = 100.00
@@ -164,6 +167,17 @@ class FirebaseManager @Inject constructor( context: Context , val sharedPreferen
            false
        }
    }
+/*data class TickerTypes(
+  //  @PrimaryKey(autoGenerate = true)
+    val market: String = "",
+    val name: String? = " ",
+    val ticker: String?= " ",
+    val type: String? = " ",
+    val locale: String? = "",
+
+    )*/
+
+
     @SuppressLint("SuspiciousIndentation")
     suspend fun recordTransaction(userId: String, transaction: userTransaction){
      val transactionRef = userCollection.document(userId).collection("transaction").document()
@@ -256,6 +270,27 @@ suspend fun buyStock(userId:String, stock : PortfolioItem) :tradingResult{
 
     fun signOut() {
         mAuth.signOut()
+    }
+    suspend fun insertTicKer (tickerTypes: TickerTypes):Boolean{
+        return try {
+            val documentId = tickerTypes.id.ifEmpty { typesCollection.document().id }
+            typesCollection.document(tickerTypes.market).collection("tickers").document(documentId).set(tickerTypes).await()
+            Log.d("FirebaseDataHandle", "inserting ticker types")
+            true
+        }catch (e:Exception){
+            Log.e("FirebaseDataHandle", "Error ticker types: ${e.message}")
+
+            false
+        }
+    }
+    suspend fun getTickerTypes(market: String):List<TickerTypes>?{
+        return try {
+            val snapshot = typesCollection.document(market).collection("tickers").get().await()
+            snapshot.documents.mapNotNull { it.toObject(TickerTypes::class.java) }
+        }catch (e:Exception){
+            Log.e("FirebaseDataHandle", "Error get ticker types: ${e.message}")
+            emptyList()
+        }
     }
 
 

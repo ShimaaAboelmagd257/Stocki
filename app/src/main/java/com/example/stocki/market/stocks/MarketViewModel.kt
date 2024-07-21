@@ -25,7 +25,7 @@ class MarketViewModel @Inject constructor( val marketUseCase: MarketUseCase)  : 
         }
     }
 
-    fun fetchTickerLogo(ticker:List<String>) {
+   /* fun fetchTickerLogo(ticker:List<String>) {
         viewModelScope.launch {
 
             _state.value = MarketState.Loading
@@ -38,12 +38,12 @@ class MarketViewModel @Inject constructor( val marketUseCase: MarketUseCase)  : 
 
                 }
                 _state.value = MarketState.Logo(logoMap)
-               /* val result = marketUseCase.getAllTickerLogo(ticker)
+               *//* val result = marketUseCase.getAllTickerLogo(ticker)
               //  _state.value = MarketState.Logo()
-               _state.value = result*/
+               _state.value = result*//*
             } catch (e: Exception) {
                 _state.value = MarketState.Error(e.message ?: "An error occurred")
             }
         }
-    }
+    }*/
 }

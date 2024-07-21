@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.MaterialTheme
@@ -51,8 +52,11 @@ object Constans {
     val statusUrl = ""
     val buy_sellUrl = "lAcwiWEiGQg"
      val stockExchangeUrl = "F3QpgXBtDeo"
-    const val CACHE_EXPIRY_TIME = 60 * 60 * 1000 // 1 hour in milliseconds
-     val  currentTime = System.currentTimeMillis()
+    const val CACHE_EXPIRY_TIME_HOUR = 60 * 60 * 1000 // 1 hour in milliseconds
+    const val CACHE_EXPIRY_TIME_DAY = 60 * 60 * 1000 *24 // 1 hour in milliseconds
+
+    val  currentTime = System.currentTimeMillis()
+    val currentAdujestedTime = System.currentTimeMillis() - (CACHE_EXPIRY_TIME_DAY *3)
     const val DEFAULT_IMAGE_URL = "R.drawable.ic_launcher_background"
     const val MARKETS_SCREEN = "markets_screen"
     const val TICKER_INFO_SCREEN = "ticker_info_screen"
@@ -64,14 +68,15 @@ object Constans {
     val LONG_WINDOW = 26
     val SIGNAL_WINDOW = 9
     val TIMESPAN = "day"
-    /*fun timestampToDate(timestamps: List<Long>): String {
+
+    fun timestampToDate(timestamp: Long): String {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        return timestamps.map {
+        return timestamp.let {
             val instant = Instant.ofEpochMilli(it)
             val dateTime = instant.atOffset(ZoneOffset.UTC).toLocalDateTime()
             formatter.format(dateTime)
         }.toString()
-    }*/
+    }
     fun timestampsToDate(timestamps: List<Long>): List<String> {
         val formatter = DateTimeFormatter.ofPattern("MM-dd")
         return timestamps.map {
@@ -87,6 +92,53 @@ object Constans {
 
     fun isValidPassword(password: String): Boolean {
         return password.length >= 6
+    }
+    @Composable
+    fun LoadSvgImageWithFallback(
+        imageUrl: String?,
+        fallbackImage: Painter,
+        modifier: Modifier = Modifier
+    ) {
+        val painter: Painter = rememberAsyncImagePainter(
+            model = ImageRequest
+                .Builder(context = LocalContext.current)
+                .data(imageUrl)
+                .decoderFactory(SvgDecoder.Factory())
+                .build()
+        )
+        if (imageUrl.isNullOrEmpty()) {
+            Image(
+                painter = fallbackImage,
+                contentDescription = null,
+                modifier = modifier
+            )
+        } else {
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = modifier.fillMaxSize()
+            )
+        }
+    }
+    @Composable
+    fun LoadpngImageWithFallback(
+        imageUrl: String?,
+        fallbackImage: Painter,
+        modifier: Modifier = Modifier
+    ) {
+        if (imageUrl.isNullOrEmpty()) {
+            Image(
+                painter = fallbackImage,
+                contentDescription = null,
+                modifier = modifier
+            )
+        } else {
+            Image(
+                painter = rememberAsyncImagePainter(imageUrl),
+                contentDescription = null,
+                modifier = modifier
+            )
+        }
     }
     @Composable
     fun LoadNetworkSvgImage(url: String, modifier: Modifier = Modifier) {

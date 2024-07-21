@@ -37,7 +37,7 @@ class TickerInfoUseCase @Inject constructor(val repository: Repository , val use
                             iconUrl = it.branding?.icon_url
                         )
                     }
-                    repository.insertTickerLogo(brandingList)
+                 //   repository.insertTickerLogo(brandingList)
                 }
 
 

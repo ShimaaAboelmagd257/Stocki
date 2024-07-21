@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.stocki.account.signin.SigninState
 import com.example.stocki.data.firebase.FirebaseManager
 import com.example.stocki.data.firebase.tradingResult
+import com.example.stocki.data.pojos.TickerTypes
 import com.example.stocki.data.pojos.account.PortfolioItem
 import com.example.stocki.data.pojos.account.UserInfo
 import com.example.stocki.data.sharedpreferences.SharedPreference
