@@ -38,6 +38,7 @@ The app follows the Model-View-Intent (MVI) architecture pattern, which helps in
 
 **Stocki** utilizes the Polygon.io Stocks API to fetch real-time market data and other relevant information. The Polygon.io Stocks API offers a wide range of REST endpoints that provide access to various data sets
 By leveraging the Polygon.io Stocks API, **Stocki** ensures reliable and comprehensive data for users, enabling them to make informed decisions about stock investments and market trends.
+Ensure you have the necessary API keys and configurations set up for Firebase authentication and other services.
 
 ## Usage
 
@@ -72,8 +73,10 @@ To use Stocki, follow these steps:
 ![Explore Screen](https://github.com/user-attachments/assets/d18e9fd5-1bf1-41db-8f86-41f83aa96b62)
 ![Explore Item Screen](https://github.com/user-attachments/assets/336a4f65-1c70-4253-abe4-c0a282ecd994)
 
+## News 
+![newsViewItem](https://github.com/user-attachments/assets/a978b6e2-305c-4fcc-8918-94805e5d43f8)
+![newsItem1](https://github.com/user-attachments/assets/d7c7b3ec-4ec6-403b-8e3c-943dab44a48a)
 
-Ensure you have the necessary API keys and configurations set up for Firebase authentication and other services.
 
 ## Contributions
 
